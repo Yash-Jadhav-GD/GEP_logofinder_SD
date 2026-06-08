@@ -1,423 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GEP Logo Finder</title>
+  <!-- All CDN libs loaded lazily on demand — zero blocking scripts -->
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --brand:       #0a3d62;
-      --brand-light: #1a6ba5;
-      --accent:      #e84393;
-      --bg:          #f0f4f8;
-      --surface:     #ffffff;
-      --surface2:    #f7f9fc;
-      --border:      #dde3ea;
-      --text:        #1a2a3a;
-      --text-muted:  #6b7c93;
-      --shadow:      0 4px 24px rgba(10,61,98,.10);
-      --shadow-sm:   0 2px 8px rgba(10,61,98,.08);
-      --radius:      14px;
-      --radius-sm:   8px;
-      --green:       #16a34a;
-      --transition:  .2s ease;
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --brand:#0a3d62;--brand-l:#1a6ba5;--accent:#e84393;
+      --bg:#f0f4f8;--surface:#fff;--surface2:#f7f9fc;--border:#dde3ea;
+      --text:#1a2a3a;--muted:#6b7c93;
+      --green:#16a34a;--purple:#7c3aed;--orange:#d97706;--red:#dc2626;
+      --shadow:0 4px 24px rgba(10,61,98,.10);--shadow-sm:0 2px 8px rgba(10,61,98,.08);
+      --r:14px;--rs:8px;--t:.2s ease;
     }
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
 
-    body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+    /* Header */
+    header{background:linear-gradient(135deg,var(--brand),var(--brand-l));color:#fff;padding:0 24px;box-shadow:0 2px 12px rgba(10,61,98,.25);position:sticky;top:0;z-index:200}
+    .hinner{max-width:1200px;margin:0 auto;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none}
+    .brand span{font-size:1.2rem;font-weight:700;letter-spacing:-.3px}
+    .hright{display:flex;align-items:center;gap:10px}
+    .badge{font-size:.7rem;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:2px 10px;white-space:nowrap}
+    .bulk-hbtn{display:flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-size:.8rem;font-weight:600;cursor:pointer;transition:background var(--t);white-space:nowrap}
+    .bulk-hbtn:hover{background:rgba(255,255,255,.25)}
 
-    /* ── Header ── */
-    header {
-      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
-      color: #fff;
-      padding: 0 24px;
-      box-shadow: 0 2px 12px rgba(10,61,98,.25);
-      position: sticky;
-      top: 0;
-      z-index: 200;
-    }
-    .header-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .logo-brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; }
-    .logo-brand span { font-size: 1.2rem; font-weight: 700; letter-spacing: -.3px; }
-    .header-badge {
-      font-size: .7rem;
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.3);
-      border-radius: 20px;
-      padding: 2px 10px;
-    }
+    /* Layout */
+    main{flex:1;max-width:1200px;margin:0 auto;width:100%;padding:32px 20px 60px}
 
-    /* ── Main Layout ── */
-    main {
-      flex: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      width: 100%;
-      padding: 32px 20px 60px;
-    }
+    /* Hero */
+    .hero{text-align:center;margin-bottom:36px}
+    .hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:var(--brand);margin-bottom:8px;letter-spacing:-.5px}
+    .hero p{color:var(--muted);font-size:1rem;margin-bottom:28px}
 
-    /* ── Hero ── */
-    .hero {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-    .hero h1 {
-      font-size: clamp(1.6rem, 4vw, 2.4rem);
-      font-weight: 800;
-      color: var(--brand);
-      margin-bottom: 8px;
-      letter-spacing: -.5px;
-    }
-    .hero p { color: var(--text-muted); font-size: 1rem; margin-bottom: 28px; }
 
-    /* ── Search Box ── */
-    .search-wrap {
-      display: flex;
-      gap: 10px;
-      max-width: 640px;
-      margin: 0 auto;
-      position: relative;
-    }
-    .search-input-wrap { flex: 1; position: relative; }
-    .search-input-wrap .s-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-    #searchInput {
-      width: 100%;
-      padding: 14px 14px 14px 44px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 1rem;
-      outline: none;
-      background: var(--surface);
-      transition: border-color var(--transition), box-shadow var(--transition);
-    }
-    #searchInput:focus {
-      border-color: var(--brand-light);
-      box-shadow: 0 0 0 3px rgba(26,107,165,.15);
-    }
+    /* Search */
+    .search-wrap{display:flex;gap:10px;max-width:640px;margin:0 auto;position:relative}
+    .sinput-wrap{flex:1;position:relative}
+    .sinput-wrap .sico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+    #searchInput{width:100%;padding:14px 14px 14px 44px;border:2px solid var(--border);border-radius:var(--r);font-size:1rem;outline:none;background:var(--surface);transition:border-color var(--t),box-shadow var(--t)}
+    #searchInput:focus{border-color:var(--brand-l);box-shadow:0 0 0 3px rgba(26,107,165,.15)}
+    #ac{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);z-index:300;max-height:380px;overflow-y:auto;display:none}
+    #ac.open{display:block}
+    .ac-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background var(--t);font-size:.88rem}
+    .ac-item:hover,.ac-item.focused{background:var(--surface2)}
+    .ac-item img{width:28px;height:28px;object-fit:contain;border-radius:4px;background:var(--surface2);border:1px solid var(--border);padding:2px;flex-shrink:0}
+    .ac-item-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ac-item-domain{font-size:.75rem;color:var(--muted)}
+    .ac-div{height:1px;background:var(--border)}
+    #searchBtn{padding:14px 26px;background:linear-gradient(135deg,var(--brand),var(--brand-l));color:#fff;border:none;border-radius:var(--r);font-size:1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:opacity var(--t),transform var(--t);white-space:nowrap;flex-shrink:0}
+    #searchBtn:hover{opacity:.9;transform:translateY(-1px)}
+    #searchBtn:disabled{opacity:.6;cursor:default;transform:none}
 
-    /* Autocomplete dropdown */
-    #autocomplete {
-      position: absolute;
-      top: calc(100% + 6px);
-      left: 0;
-      right: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      z-index: 300;
-      overflow: hidden;
-      display: none;
-    }
-    #autocomplete.open { display: block; }
-    .ac-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 14px;
-      cursor: pointer;
-      transition: background var(--transition);
-      font-size: .88rem;
-    }
-    .ac-item:hover, .ac-item.focused { background: var(--surface2); }
-    .ac-item img {
-      width: 28px;
-      height: 28px;
-      object-fit: contain;
-      border-radius: 4px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      padding: 2px;
-      flex-shrink: 0;
-    }
-    .ac-item-text { flex: 1; overflow: hidden; }
-    .ac-item-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .ac-item-domain { font-size: .75rem; color: var(--text-muted); }
-    .ac-divider { height: 1px; background: var(--border); }
+    /* Content grid */
+    .content-grid{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+    @media(max-width:800px){.content-grid{grid-template-columns:1fr}}
+    #resultsArea{min-height:200px}
+    .results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+    .results-header h2{font-size:1rem;font-weight:700;color:var(--brand)}
+    .results-count{font-size:.8rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px}
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:16px}
 
-    #searchBtn {
-      padding: 14px 26px;
-      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: opacity var(--transition), transform var(--transition);
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-    #searchBtn:hover { opacity: .9; transform: translateY(-1px); }
-    #searchBtn:active { transform: translateY(0); }
-    #searchBtn:disabled { opacity: .6; cursor: default; transform: none; }
+    /* Logo Card */
+    .logo-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;transition:transform var(--t),box-shadow var(--t);overflow:hidden}
+    .logo-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+    .card-img-wrap{background:var(--surface2);display:flex;align-items:center;justify-content:center;height:150px;padding:24px;position:relative;overflow:hidden}
+    .card-img-wrap img{max-width:100%;max-height:110px;object-fit:contain;transition:transform var(--t)}
+    .logo-card:hover .card-img-wrap img{transform:scale(1.06)}
 
-    /* ── Grid Layout ── */
-    .content-grid {
-      display: grid;
-      grid-template-columns: 1fr 300px;
-      gap: 24px;
-      align-items: start;
-    }
-    @media (max-width: 800px) { .content-grid { grid-template-columns: 1fr; } }
+    /* Source badge */
+    .src-badge{position:absolute;top:8px;left:8px;font-size:.62rem;font-weight:800;letter-spacing:.4px;border-radius:5px;padding:2px 6px;display:flex;align-items:center;gap:3px}
+    .src-badge.svg{background:rgba(22,163,74,.9);color:#fff}
+    .src-badge.png{background:rgba(26,107,165,.9);color:#fff}
+    .src-badge.resolving{background:rgba(100,116,139,.8);color:#fff;animation:pulse 1.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
 
-    /* ── Results ── */
-    #resultsArea { min-height: 200px; }
-    .results-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .results-header h2 { font-size: 1rem; font-weight: 700; color: var(--brand); }
-    .results-count {
-      font-size: .8rem;
-      color: var(--text-muted);
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 3px 10px;
-    }
+    .fav-btn{position:absolute;top:8px;right:8px;background:var(--surface);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--t);font-size:.9rem}
+    .fav-btn:hover{background:#fff3f8;border-color:var(--accent)}
+    .fav-btn.active{background:#fff0f6;border-color:var(--accent)}
 
-    .cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-      gap: 16px;
-    }
+    /* Source chips row on card — SVG variants + PNG */
+    .card-sources{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px 0}
+    .src-chip{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid;cursor:pointer;transition:all var(--t);display:flex;align-items:center;gap:3px}
+    .src-chip.svg-opt{color:var(--green);border-color:rgba(22,163,74,.3);background:rgba(22,163,74,.07)}
+    .src-chip.svg-opt:hover,.src-chip.svg-opt.active{background:var(--green);color:#fff;border-color:var(--green)}
+    .src-chip.png{color:var(--brand-l);border-color:rgba(26,107,165,.3);background:rgba(26,107,165,.07)}
+    .src-chip.png:hover,.src-chip.png.active{background:var(--brand-l);color:#fff;border-color:var(--brand-l)}
 
-    /* ── Logo Card ── */
-    .logo-card {
-      background: var(--surface);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      transition: transform var(--transition), box-shadow var(--transition);
-      overflow: hidden;
-    }
-    .logo-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .card-body{padding:8px 14px 4px}
+    .card-title{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .card-domain{font-size:.77rem;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .card-actions{display:flex;flex-direction:column;gap:6px;padding:8px 12px 10px;border-top:1px solid var(--border);background:var(--surface2);margin-top:auto}
+    .btn-primary-dl{width:100%;padding:9px 12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;border:none;border-radius:var(--rs);font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity var(--t),transform var(--t)}
+    .btn-primary-dl:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-primary-dl.png-mode{background:linear-gradient(135deg,var(--brand),var(--brand-l))}
+    .btn-primary-dl:disabled{opacity:.45;cursor:default;transform:none;background:#9ca3af}
+    .card-row{display:flex;gap:6px}
+    .card-btn{flex:1;padding:7px 5px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:.7rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;transition:all var(--t);color:var(--text)}
+    .card-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .card-btn.copied{background:var(--green);color:#fff;border-color:var(--green)}
+    .btn-convert{width:100%;padding:7px 10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:var(--rs);font-size:.73rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:opacity var(--t),transform var(--t)}
+    .btn-convert:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-convert:disabled{opacity:.45;cursor:default;transform:none}
 
-    .card-img-wrap {
-      background: var(--surface2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 150px;
-      padding: 24px;
-      position: relative;
-      overflow: hidden;
-    }
-    .card-img-wrap img {
-      max-width: 100%;
-      max-height: 110px;
-      object-fit: contain;
-      transition: transform var(--transition);
-    }
-    .logo-card:hover .card-img-wrap img { transform: scale(1.06); }
+    /* Skeleton */
+    .skel{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+    .skel-img{height:150px;background:linear-gradient(90deg,#e8ecf0 25%,#f5f7fa 50%,#e8ecf0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+    .skel-body{padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+    .skel-line{height:12px;border-radius:6px;background:linear-gradient(90deg,#e8ecf0 25%,#f5f7fa 50%,#e8ecf0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
+    .skel-line.s{width:60%}
+    @keyframes shimmer{to{background-position:-200% 0}}
 
-    /* SVG badge on card */
-    .svg-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      font-size: .65rem;
-      font-weight: 800;
-      letter-spacing: .5px;
-      background: linear-gradient(135deg, #16a34a, #15803d);
-      color: #fff;
-      border-radius: 5px;
-      padding: 2px 6px;
-    }
-    .png-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      font-size: .65rem;
-      font-weight: 800;
-      letter-spacing: .5px;
-      background: var(--brand-light);
-      color: #fff;
-      border-radius: 5px;
-      padding: 2px 6px;
-    }
+    /* State boxes */
+    .state-box{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:48px 24px;text-align:center;color:var(--muted)}
+    .state-box .ico{font-size:3rem;margin-bottom:12px}
+    .state-box h3{font-size:1.1rem;color:var(--text);margin-bottom:6px}
+    .state-box p{font-size:.9rem;max-width:320px;margin:0 auto}
+    .state-box.error{border-color:#f5c6cb;background:#fff5f5}
+    .state-box.error h3{color:#c0392b}
 
-    .fav-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all var(--transition);
-      font-size: .9rem;
-    }
-    .fav-btn:hover { background: #fff3f8; border-color: var(--accent); }
-    .fav-btn.active { background: #fff0f6; border-color: var(--accent); }
+    /* Sidebar */
+    .sidebar{display:flex;flex-direction:column;gap:20px}
+    .panel{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden}
+    .panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--surface2);border-bottom:1px solid var(--border)}
+    .panel-hdr h3{font-size:.9rem;font-weight:700;color:var(--brand);display:flex;align-items:center;gap:6px}
+    .panel-body{padding:12px}
+    .pa-btn{font-size:.75rem;font-weight:600;background:none;border:none;cursor:pointer;color:var(--muted);padding:2px 6px;border-radius:4px;transition:all var(--t)}
+    .pa-btn:hover{color:var(--accent);background:rgba(232,67,147,.06)}
+    .hist-list{display:flex;flex-direction:column;gap:4px;max-height:300px;overflow-y:auto}
+    .hist-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--rs);cursor:pointer;transition:background var(--t);font-size:.85rem}
+    .hist-item:hover{background:var(--surface2)}
+    .hist-item .ht{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .hist-item .hd{opacity:0;background:none;border:none;cursor:pointer;color:var(--muted);font-size:.8rem;padding:2px 4px;border-radius:4px;transition:all var(--t)}
+    .hist-item:hover .hd{opacity:1}
+    .hist-item .hd:hover{color:#e74c3c;background:#fdf0f0}
+    .fav-list{display:flex;flex-direction:column;gap:6px;max-height:360px;overflow-y:auto}
+    .fav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface2)}
+    .fav-item img{width:32px;height:32px;object-fit:contain;border-radius:4px;background:#fff;border:1px solid var(--border);padding:2px;flex-shrink:0}
+    .fav-info{flex:1;overflow:hidden}
+    .fav-info .fn{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .fav-info .fd{font-size:.72rem;color:var(--muted)}
+    .fav-rm{background:none;border:none;cursor:pointer;color:var(--muted);font-size:.9rem;padding:3px 5px;border-radius:4px;flex-shrink:0;transition:all var(--t)}
+    .fav-rm:hover{color:#e74c3c;background:#fdf0f0}
+    .exp-btn{width:100%;margin-top:10px;padding:9px;background:linear-gradient(135deg,var(--brand),var(--brand-l));color:#fff;border:none;border-radius:var(--rs);font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity var(--t)}
+    .exp-btn:hover{opacity:.9}
+    .ep{text-align:center;padding:24px 12px;color:var(--muted);font-size:.85rem}
+    .ep .ei{font-size:1.8rem;margin-bottom:6px}
 
-    .card-body { padding: 12px 14px; }
-    .card-title { font-weight: 700; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .card-domain { font-size: .77rem; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    /* Bulk Modal */
+    .overlay{position:fixed;inset:0;background:rgba(10,30,50,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+    .overlay.hidden{display:none}
+    .modal{background:var(--surface);border-radius:var(--r);box-shadow:0 8px 48px rgba(10,61,98,.25);width:100%;max-width:700px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+    .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);background:var(--surface2)}
+    .modal-hdr h2{font-size:1.1rem;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:8px}
+    .mclose{background:none;border:none;cursor:pointer;font-size:1.3rem;color:var(--muted);line-height:1;padding:4px 8px;border-radius:6px;transition:all var(--t)}
+    .mclose:hover{background:var(--bg);color:var(--text)}
+    .modal-body{padding:20px 22px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:16px}
+    .modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;background:var(--surface2)}
 
-    /* Card Actions */
-    .card-actions { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-top: 1px solid var(--border); background: var(--surface2); }
 
-    /* Primary SVG button */
-    .btn-svg {
-      width: 100%;
-      padding: 9px 12px;
-      background: linear-gradient(135deg, #16a34a, #15803d);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: .8rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: opacity var(--transition), transform var(--transition);
-      letter-spacing: .2px;
-    }
-    .btn-svg:hover { opacity: .9; transform: translateY(-1px); }
-    .btn-svg:active { transform: translateY(0); }
-    .btn-svg:disabled { opacity: .45; cursor: default; transform: none; background: #9ca3af; }
+    .bulk-tabs{display:flex;gap:4px;background:var(--surface2);border-radius:10px;padding:4px;border:1px solid var(--border)}
+    .btab{flex:1;padding:8px 14px;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all var(--t)}
+    .btab.active{background:var(--surface);color:var(--brand);box-shadow:0 1px 4px rgba(10,61,98,.12)}
+    .btab-panel{display:none}
+    .btab-panel.active{display:block}
 
-    /* Secondary row */
-    .card-actions-row { display: flex; gap: 6px; }
-    .card-btn {
-      flex: 1;
-      padding: 7px 6px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      font-size: .72rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      transition: all var(--transition);
-      color: var(--text);
-    }
-    .card-btn:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
-    .card-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+    #bulkTextarea{width:100%;min-height:160px;padding:12px 14px;border:2px solid var(--border);border-radius:var(--rs);font-size:.88rem;font-family:inherit;resize:vertical;outline:none;transition:border-color var(--t)}
+    #bulkTextarea:focus{border-color:var(--brand-l);box-shadow:0 0 0 3px rgba(26,107,165,.15)}
+    .hint{font-size:.78rem;color:var(--muted);margin-top:6px;line-height:1.5}
 
-    /* ── Skeleton ── */
-    .skeleton-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
-    .skeleton-img { height: 150px; background: linear-gradient(90deg,#e8ecf0 25%,#f5f7fa 50%,#e8ecf0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
-    .skeleton-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
-    .skeleton-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg,#e8ecf0 25%,#f5f7fa 50%,#e8ecf0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
-    .skeleton-line.short { width: 60%; }
-    @keyframes shimmer { to { background-position: -200% 0; } }
+    .upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:36px 20px;text-align:center;cursor:pointer;transition:all var(--t);background:var(--surface2)}
+    .upload-zone:hover,.upload-zone.drag{border-color:var(--brand-l);background:rgba(26,107,165,.04)}
+    .upload-zone .uzi{font-size:2.2rem;margin-bottom:8px}
+    .upload-zone h4{font-size:.95rem;font-weight:700;color:var(--brand);margin-bottom:4px}
+    .upload-zone p{font-size:.8rem;color:var(--muted)}
+    .upload-zone input{display:none}
+    .fchip{display:inline-flex;align-items:center;gap:6px;background:rgba(26,107,165,.1);border:1px solid rgba(26,107,165,.2);border-radius:20px;padding:4px 12px;font-size:.82rem;color:var(--brand);font-weight:600;margin-top:10px}
 
-    /* ── State Boxes ── */
-    .state-box { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 48px 24px; text-align: center; color: var(--text-muted); }
-    .state-box .state-icon { font-size: 3rem; margin-bottom: 12px; }
-    .state-box h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 6px; }
-    .state-box p { font-size: .9rem; max-width: 320px; margin: 0 auto; }
-    .state-box.error { border-color: #f5c6cb; background: #fff5f5; }
-    .state-box.error h3 { color: #c0392b; }
+    .bulk-opts{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 14px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);font-size:.85rem}
+    .bulk-opts label{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:500}
+    .bulk-opts input[type=checkbox]{width:16px;height:16px;accent-color:var(--brand)}
 
-    /* ── Sidebar ── */
-    .sidebar { display: flex; flex-direction: column; gap: 20px; }
-    .panel { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; }
-    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); }
-    .panel-header h3 { font-size: .9rem; font-weight: 700; color: var(--brand); display: flex; align-items: center; gap: 6px; }
-    .panel-body { padding: 12px; }
-    .panel-action-btn { font-size: .75rem; font-weight: 600; background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px 6px; border-radius: 4px; transition: all var(--transition); }
-    .panel-action-btn:hover { color: var(--accent); background: rgba(232,67,147,.06); }
+    .bulk-prog{display:none}
+    .bulk-prog.on{display:block}
+    .pbar-wrap{background:var(--border);border-radius:10px;height:10px;overflow:hidden;margin:10px 0}
+    .pbar{height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-l));border-radius:10px;transition:width .3s ease;width:0%}
+    .plabel{font-size:.82rem;color:var(--muted);display:flex;justify-content:space-between}
+    .plog{max-height:140px;overflow-y:auto;font-size:.78rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-top:6px;display:flex;flex-direction:column;gap:3px}
+    .lok{color:#16a34a}.lerr{color:#e74c3c}.lskip{color:#f59e0b}.linfo{color:var(--brand-l)}
 
-    .history-list { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; }
-    .history-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background var(--transition); font-size: .85rem; }
-    .history-item:hover { background: var(--surface2); }
-    .history-item .h-icon { font-size: .9rem; flex-shrink: 0; }
-    .history-item .h-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .history-item .h-del { opacity: 0; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: .8rem; padding: 2px 4px; border-radius: 4px; transition: all var(--transition); }
-    .history-item:hover .h-del { opacity: 1; }
-    .history-item .h-del:hover { color: #e74c3c; background: #fdf0f0; }
+    .btn-p{padding:10px 22px;background:linear-gradient(135deg,var(--brand),var(--brand-l));color:#fff;border:none;border-radius:var(--rs);font-size:.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:opacity var(--t),transform var(--t)}
+    .btn-p:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-p:disabled{opacity:.5;cursor:default;transform:none}
+    .btn-g{padding:10px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);font-size:.88rem;font-weight:600;cursor:pointer;color:var(--text);transition:all var(--t)}
+    .btn-g:hover{background:var(--surface2)}
 
-    .fav-list { display: flex; flex-direction: column; gap: 6px; max-height: 360px; overflow-y: auto; }
-    .fav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); }
-    .fav-item img { width: 32px; height: 32px; object-fit: contain; border-radius: 4px; background: #fff; border: 1px solid var(--border); padding: 2px; flex-shrink: 0; }
-    .fav-item-info { flex: 1; overflow: hidden; }
-    .fav-item-info .fi-name { font-size: .82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .fav-item-info .fi-domain { font-size: .72rem; color: var(--text-muted); }
-    .fav-remove { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: .9rem; padding: 3px 5px; border-radius: 4px; flex-shrink: 0; transition: all var(--transition); }
-    .fav-remove:hover { color: #e74c3c; background: #fdf0f0; }
-    .export-btn { width: 100%; margin-top: 10px; padding: 9px; background: linear-gradient(135deg, var(--brand), var(--brand-light)); color: #fff; border: none; border-radius: var(--radius-sm); font-size: .82rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity var(--transition); }
-    .export-btn:hover { opacity: .9; }
+    /* Toast */
+    #toastWrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+    .toast{background:#1a2a3a;color:#fff;padding:11px 18px;border-radius:10px;font-size:.85rem;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:slIn .3s ease;display:flex;align-items:center;gap:8px}
+    .toast.ok{background:#16a34a}.toast.er{background:#e74c3c}.toast.in{background:var(--brand-l)}
+    @keyframes slIn{from{transform:translateX(30px);opacity:0}}
+    @keyframes slOut{to{opacity:0;transform:translateX(30px)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
 
-    .empty-panel { text-align: center; padding: 24px 12px; color: var(--text-muted); font-size: .85rem; }
-    .empty-panel .ep-icon { font-size: 1.8rem; margin-bottom: 6px; }
-
-    /* ── Toast ── */
-    #toastContainer { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-    .toast { background: #1a2a3a; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: .85rem; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.2); animation: slideIn .3s ease; display: flex; align-items: center; gap: 8px; }
-    .toast.success { background: #16a34a; }
-    .toast.error   { background: #e74c3c; }
-    .toast.info    { background: var(--brand-light); }
-    @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } }
-    @keyframes fadeOut { to { opacity: 0; transform: translateX(30px); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Footer ── */
-    footer { background: var(--brand); color: rgba(255,255,255,.65); text-align: center; padding: 14px; font-size: .78rem; }
-    footer strong { color: rgba(255,255,255,.9); }
-    footer a { color: rgba(255,255,255,.75); }
-
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-    @media (max-width: 520px) {
-      .search-wrap { flex-direction: column; }
-      #searchBtn { width: 100%; justify-content: center; }
-      .cards-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 340px) { .cards-grid { grid-template-columns: 1fr; } }
+    footer{background:var(--brand);color:rgba(255,255,255,.65);text-align:center;padding:14px;font-size:.78rem}
+    footer strong{color:rgba(255,255,255,.9)}footer a{color:rgba(255,255,255,.75)}
+    ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    @media(max-width:520px){.search-wrap{flex-direction:column}#searchBtn{width:100%;justify-content:center}.cards-grid{grid-template-columns:1fr 1fr}.bulk-hbtn span{display:none}}
+    @media(max-width:360px){.cards-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-inner">
-    <a class="logo-brand" href="#">
+  <div class="hinner">
+    <a class="brand" href="#">
       <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
         <rect width="32" height="32" rx="8" fill="rgba(255,255,255,.15)"/>
         <path d="M8 10h16M8 16h10M8 22h13" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
@@ -426,21 +225,94 @@
       </svg>
       <span>GEP Logo Finder</span>
     </a>
-    <span class="header-badge">Solution Design Team</span>
+    <div class="hright">
+      <button class="bulk-hbtn" id="openBulkBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Bulk Download</span>
+      </button>
+      <span class="badge">Solution Design Team</span>
+    </div>
   </div>
 </header>
+
+<!-- Bulk Modal -->
+<div class="overlay hidden" id="bulkModal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <h2>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Bulk Logo Download
+      </h2>
+      <button class="mclose" id="closeBulk">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="bulk-tabs">
+        <button class="btab active" data-tab="text">✏️ Paste List</button>
+        <button class="btab" data-tab="file">📁 Upload File</button>
+        <button class="btab" data-tab="browser">🔍 From Search</button>
+      </div>
+
+      <div class="btab-panel active" id="tab-text">
+        <textarea id="bulkTextarea" placeholder="Enter one company name or domain per line:&#10;apple.com&#10;google&#10;microsoft.com&#10;amazon&#10;..."></textarea>
+        <p class="hint">One company / domain per line. Comma, tab, or semicolon separated also works.</p>
+      </div>
+
+      <div class="btab-panel" id="tab-file">
+        <div class="upload-zone" id="uploadZone">
+          <div class="uzi">📂</div>
+          <h4>Drop your file here or click to browse</h4>
+          <p>Supports <strong>.txt</strong>, <strong>.csv</strong> and <strong>.xlsx / .xls</strong></p>
+          <input type="file" id="fileInput" accept=".txt,.csv,.xlsx,.xls"/>
+          <div id="fileChip" style="display:none" class="fchip">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span id="fileChipName"></span>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:8px">First column of each row is read. Headers are detected and skipped.</p>
+      </div>
+
+      <div class="btab-panel" id="tab-browser">
+        <div id="browserTabContent">
+          <div class="state-box" style="padding:28px 16px">
+            <div class="ico">🔍</div>
+            <h3>No search results yet</h3>
+            <p>Run a search first, then come back here to bulk-download all results.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bulk-opts">
+        <strong style="color:var(--brand);font-size:.85rem">Options:</strong>
+        <label><input type="checkbox" id="optConvertSvg"/> Convert PNG→SVG if no SVG found (experimental)</label>
+        <label><input type="checkbox" id="optSkipFailed" checked/> Skip companies with no logo</label>
+      </div>
+
+      <div class="bulk-prog" id="bulkProg">
+        <div class="plabel"><span id="progText">Processing…</span><span id="progCount">0/0</span></div>
+        <div class="pbar-wrap"><div class="pbar" id="progFill"></div></div>
+        <div class="plog" id="progLog"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-g" id="closeBulk2">Cancel</button>
+      <button class="btn-p" id="startBulkBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download ZIP
+      </button>
+    </div>
+  </div>
+</div>
 
 <main>
   <div class="hero">
     <h1>Find Any Company Logo</h1>
-    <p>Search by company name or domain — get matching results with the highest quality logos.</p>
-
+    <p>Search by company name or domain — SVG always first, PNG as fallback.</p>
     <div class="search-wrap" id="searchWrap">
-      <div class="search-input-wrap">
-        <svg class="s-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="searchInput" placeholder="e.g. apple, google.com, microsoft..." autocomplete="off" spellcheck="false" />
-        <!-- Autocomplete dropdown -->
-        <div id="autocomplete"></div>
+      <div class="sinput-wrap">
+        <svg class="sico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="e.g. apple, google.com, microsoft..." autocomplete="off" spellcheck="false"/>
+        <div id="ac"></div>
       </div>
       <button id="searchBtn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -452,41 +324,33 @@
   <div class="content-grid">
     <div id="resultsArea">
       <div class="state-box">
-        <div class="state-icon">🔍</div>
+        <div class="ico">🔍</div>
         <h3>Search for a Logo</h3>
-        <p>Type a company name and see matching results. SVG format is fetched first for best quality.</p>
+        <p>Type a company name and see matching results. SVG is fetched first for best quality; click the format chips on a card to switch.</p>
       </div>
     </div>
-
     <aside class="sidebar">
       <div class="panel">
-        <div class="panel-header">
+        <div class="panel-hdr">
           <h3>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             Recent Searches
           </h3>
-          <button class="panel-action-btn" id="clearHistoryBtn">Clear all</button>
+          <button class="pa-btn" id="clearHistBtn">Clear all</button>
         </div>
-        <div class="panel-body">
-          <div class="history-list" id="historyList">
-            <div class="empty-panel"><div class="ep-icon">🕐</div>No recent searches</div>
-          </div>
-        </div>
+        <div class="panel-body"><div class="hist-list" id="histList"><div class="ep"><div class="ei">🕐</div>No recent searches</div></div></div>
       </div>
-
       <div class="panel">
-        <div class="panel-header">
+        <div class="panel-hdr">
           <h3>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             Favorites
           </h3>
-          <button class="panel-action-btn" id="clearFavsBtn">Clear all</button>
+          <button class="pa-btn" id="clearFavsBtn">Clear all</button>
         </div>
         <div class="panel-body">
-          <div class="fav-list" id="favList">
-            <div class="empty-panel"><div class="ep-icon">💛</div>No favorites saved yet</div>
-          </div>
-          <button class="export-btn" id="exportFavsBtn">
+          <div class="fav-list" id="favList"><div class="ep"><div class="ei">💛</div>No favorites yet</div></div>
+          <button class="exp-btn" id="expFavsBtn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Export Favorites as JSON
           </button>
@@ -497,497 +361,769 @@
 </main>
 
 <footer>
-  <strong>GEP Logo Finder</strong> &nbsp;·&nbsp; Maintained by <strong>GEP Solution Design (SD) Team</strong> &nbsp;·&nbsp; Not maintained by IT &nbsp;·&nbsp; Powered by <a href="https://logo.dev" target="_blank">Logo.dev</a>
+  <strong>GEP Logo Finder</strong> &nbsp;·&nbsp; Maintained by <strong>GEP Solution Design (SD) Team</strong> &nbsp;·&nbsp; Not maintained by IT
 </footer>
-
-<div id="toastContainer"></div>
+<div id="toastWrap"></div>
 
 <script>
 'use strict';
 
-/* ── CONFIG ── */
-const API_KEY      = 'pk_F3Kj1CmdQAy5nJ00eAPR7Q';
-const SECRET_KEY   = 'sk_Aj28JGhuQvmTifhPdkLMng';
-const CDN_BASE     = 'https://img.logo.dev/';
-const LS_HISTORY   = 'gepLogoHistory';
-const LS_FAVORITES = 'gepLogoFavorites';
-const MAX_HISTORY  = 20;
-
-/* ── DOM ── */
-const searchInput     = document.getElementById('searchInput');
-const searchBtn       = document.getElementById('searchBtn');
-const autocomplete    = document.getElementById('autocomplete');
-const resultsArea     = document.getElementById('resultsArea');
-const historyList     = document.getElementById('historyList');
-const favList         = document.getElementById('favList');
-const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-const clearFavsBtn    = document.getElementById('clearFavsBtn');
-const exportFavsBtn   = document.getElementById('exportFavsBtn');
-const toastContainer  = document.getElementById('toastContainer');
-
-/* ── STATE ── */
-let acResults     = [];   // current autocomplete matches
-let acFocused     = -1;   // keyboard-navigated index
-let debounceTimer = null;
-let svgAvailCache = {};   // domain → true/false SVG availability
-
-/* ── LOCAL STORAGE ── */
-const readLS  = k => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } };
-const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-
-function addToHistory(q) {
-  let h = readLS(LS_HISTORY).filter(x => x.toLowerCase() !== q.toLowerCase());
-  h.unshift(q);
-  writeLS(LS_HISTORY, h.slice(0, MAX_HISTORY));
-  renderHistory();
+/* ══════════════════════════════════════════════════════
+   LAZY LIB LOADER  — CDN libs injected only when needed
+══════════════════════════════════════════════════════ */
+const _lib = {};
+function loadLib(url) {
+  if (_lib[url]) return _lib[url];
+  return _lib[url] = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = url; s.onload = res;
+    s.onerror = () => rej(new Error('Load failed: ' + url));
+    document.head.appendChild(s);
+  });
 }
+const loadJSZip = () => loadLib('https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js');
+const loadXLSX  = () => loadLib('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js');
+const loadTracer= () => loadLib('https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.js');
 
-function toggleFavorite(entry) {
-  let favs = readLS(LS_FAVORITES);
-  const idx = favs.findIndex(f => f.domain === entry.domain);
-  if (idx > -1) { favs.splice(idx, 1); writeLS(LS_FAVORITES, favs); renderFavorites(); return false; }
-  favs.unshift(entry);
-  writeLS(LS_FAVORITES, favs);
-  renderFavorites();
-  return true;
+/* ══════════════════════════════════════════════════════
+   CONFIG & KEYS
+══════════════════════════════════════════════════════ */
+const PUB_KEY  = 'pk_F3Kj1CmdQAy5nJ00eAPR7Q';
+const SEC_KEY  = 'sk_Aj28JGhuQvmTifhPdkLMng';
+const LS_HIST  = 'gepLogoHist';
+const LS_FAVS  = 'gepLogoFavs';
+const MAX_HIST = 20;
+
+/* ══════════════════════════════════════════════════════
+   DOM
+══════════════════════════════════════════════════════ */
+const $        = id => document.getElementById(id);
+const searchInput  = $('searchInput');
+const searchBtn    = $('searchBtn');
+const acEl         = $('ac');
+const resultsArea  = $('resultsArea');
+const histList     = $('histList');
+const favListEl    = $('favList');
+const toastWrap    = $('toastWrap');
+
+/* ══════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════ */
+let acItems    = [], acIdx = -1, debTimer = null;
+let curResults = [];      // last search result objects
+let bulkParsed = [];      // domains from file upload
+let bulkRunning= false;
+// logoCache[domain] = { sources: { iconify, wikimedia, logodev, png }, active }
+const logoCache = {};
+
+/* ══════════════════════════════════════════════════════
+   LOCAL STORAGE HELPERS
+══════════════════════════════════════════════════════ */
+const readLS  = k => { try { return JSON.parse(localStorage.getItem(k))||[]; } catch { return []; } };
+const writeLS = (k,v) => localStorage.setItem(k, JSON.stringify(v));
+
+function addHist(q) {
+  let h = readLS(LS_HIST).filter(x => x.toLowerCase() !== q.toLowerCase());
+  writeLS(LS_HIST, [q, ...h].slice(0, MAX_HIST));
+  renderHist();
 }
-const isFavorite = domain => readLS(LS_FAVORITES).some(f => f.domain === domain);
+function toggleFav(entry) {
+  let f = readLS(LS_FAVS);
+  const i = f.findIndex(x => x.domain === entry.domain);
+  if (i > -1) { f.splice(i, 1); } else { f.unshift(entry); }
+  writeLS(LS_FAVS, f);
+  renderFavs();
+  return i === -1;
+}
+const isFav = d => readLS(LS_FAVS).some(f => f.domain === d);
 
-/* ── URL BUILDERS ── */
-const pngUrl = domain => `${CDN_BASE}${domain}?token=${API_KEY}&size=200&format=png`;
-const svgUrl = domain => `${CDN_BASE}${domain}?token=${API_KEY}&format=svg`;
+/* ══════════════════════════════════════════════════════
+   URL BUILDERS
+══════════════════════════════════════════════════════ */
+const logoPng = d => `https://img.logo.dev/${d}?token=${PUB_KEY}&size=200&format=png`;
+const logoSvg = d => `https://img.logo.dev/${d}?token=${PUB_KEY}&format=svg`;
+const iconifyUrl = name => `https://api.iconify.design/logos/${name}.svg`;
 
-/* ── SVG AVAILABILITY CHECK ──
-   Fetch SVG as text; if it contains actual path/shape data it's real.
-   Logo.dev returns a small fallback for unknown domains. */
-async function hasSvg(domain) {
-  if (domain in svgAvailCache) return svgAvailCache[domain];
-  try {
-    const r = await fetch(svgUrl(domain));
-    if (!r.ok) { svgAvailCache[domain] = false; return false; }
-    const text = await r.text();
-    // A meaningful SVG has <path or <circle etc., not just an empty stub
-    const meaningful = /<(path|circle|rect|polygon|polyline|ellipse|g)[^>]*d=/i.test(text) ||
-                       (text.includes('<path') && text.length > 300);
-    svgAvailCache[domain] = meaningful;
-    return meaningful;
-  } catch {
-    svgAvailCache[domain] = false;
-    return false;
+/* ══════════════════════════════════════════════════════
+   SOURCE 1 — ICONIFY LOGOS SET
+   GET https://api.iconify.design/search?query={q}&prefixes=logos&limit=10
+   Returns { icons: ["logos:google", ...] }
+   SVG: https://api.iconify.design/logos/{name}.svg
+══════════════════════════════════════════════════════ */
+async function findIconify(stem, name) {
+  const queries = [
+    stem.toLowerCase(),
+    name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+  ];
+  for (const q of [...new Set(queries)]) {
+    try {
+      const r = await fetch(
+        `https://api.iconify.design/search?query=${encodeURIComponent(q)}&prefixes=logos&limit=10`
+      );
+      if (!r.ok) continue;
+      const data = await r.json();
+      if (!data.icons?.length) continue;
+      // Prefer exact / prefix match
+      const exact = data.icons.find(ic => {
+        const n = ic.replace('logos:', '');
+        return n === q || n.startsWith(q + '-') || n.startsWith(q + '_');
+      });
+      const iconName = (exact || data.icons[0]).replace('logos:', '');
+      // Verify it actually loads
+      const test = await fetch(iconifyUrl(iconName));
+      if (test.ok) {
+        const txt = await test.text();
+        if (txt.includes('<svg') && txt.length > 100) return iconifyUrl(iconName);
+      }
+    } catch { /* continue */ }
   }
+  return null;
 }
 
-/* ── SEARCH API ── */
-async function fetchSuggestions(q) {
-  if (q.length < 1) return [];
+/* ══════════════════════════════════════════════════════
+   SOURCE 2 — WIKIMEDIA COMMONS
+   Search: /w/api.php?action=query&list=search&srsearch={q}+logo+filetype:svg
+   File info: /w/api.php?action=query&titles=File:{name}&prop=imageinfo&iiprop=url
+══════════════════════════════════════════════════════ */
+async function findWikimedia(name) {
+  const WM = 'https://commons.wikimedia.org/w/api.php';
+  const q  = encodeURIComponent(name + ' logo filetype:svg');
   try {
     const r = await fetch(
-      `https://api.logo.dev/search?q=${encodeURIComponent(q)}`,
-      { headers: { 'Authorization': `Bearer ${SECRET_KEY}` } }
+      `${WM}?action=query&list=search&srsearch=${q}&srnamespace=6&format=json&origin=*&srlimit=5`
     );
+    if (!r.ok) return null;
+    const data  = await r.json();
+    const hits  = data?.query?.search;
+    if (!hits?.length) return null;
+
+    // Only consider results whose title ends with .svg
+    const svgHits = hits.filter(h => h.title.toLowerCase().endsWith('.svg'));
+    if (!svgHits.length) return null;
+
+    // Get actual URL for top result
+    const filename = svgHits[0].title.replace('File:', '');
+    const ir = await fetch(
+      `${WM}?action=query&titles=File:${encodeURIComponent(filename)}&prop=imageinfo&iiprop=url&format=json&origin=*`
+    );
+    if (!ir.ok) return null;
+    const info  = await ir.json();
+    const pages = info?.query?.pages;
+    const url   = Object.values(pages || {})[0]?.imageinfo?.[0]?.url;
+    return url?.toLowerCase().endsWith('.svg') ? url : null;
+  } catch { return null; }
+}
+
+/* ══════════════════════════════════════════════════════
+   SOURCE 3 — LOGO.DEV SVG
+══════════════════════════════════════════════════════ */
+async function findLogoDevSvg(domain) {
+  try {
+    const r = await fetch(logoSvg(domain));
+    if (!r.ok) return null;
+    const t = await r.text();
+    // A real SVG has path data and is meaningfully long
+    const ok = (t.includes('<path') || t.includes('<circle') || t.includes('<rect')) && t.length > 300;
+    return ok ? logoSvg(domain) : null;
+  } catch { return null; }
+}
+
+/* ══════════════════════════════════════════════════════
+   MULTI-SOURCE RESOLVER
+   Returns logoCache[domain] = {
+     sources: { iconify: url|null, wikimedia: url|null, logodev: url|null, png: url },
+     active:  'iconify'|'wikimedia'|'logodev'|'png'
+   }
+══════════════════════════════════════════════════════ */
+async function resolveLogoSources(domain, name) {
+  if (logoCache[domain]) return logoCache[domain];
+
+  const stem = domain.split('.')[0];
+
+  // Run all three SVG sources in parallel for speed
+  const [iconifyUrl, wikiUrl, ldSvg] = await Promise.all([
+    findIconify(stem, name),
+    findWikimedia(name),
+    findLogoDevSvg(domain)
+  ]);
+
+  const png = logoPng(domain);
+  const sources = { iconify: iconifyUrl, wikimedia: wikiUrl, logodev: ldSvg, png };
+  // Best source priority order
+  const active = iconifyUrl ? 'iconify'
+               : wikiUrl    ? 'wikimedia'
+               : ldSvg      ? 'logodev'
+               : 'png';
+
+  return logoCache[domain] = { sources, active };
+}
+
+/* ══════════════════════════════════════════════════════
+   LOGO.DEV SEARCH API (autocomplete)
+══════════════════════════════════════════════════════ */
+async function searchApi(q) {
+  try {
+    const r = await fetch(`https://api.logo.dev/search?q=${encodeURIComponent(q)}`,
+      { headers: { 'Authorization': `Bearer ${SEC_KEY}` } });
     if (!r.ok) return [];
-    // API returns [{name, domain, logo_url}, ...]
     return await r.json();
   } catch { return []; }
 }
 
-/* ── AUTOCOMPLETE ── */
-function showAutocomplete(items) {
-  acResults = items;
-  acFocused = -1;
-  if (!items.length) { hideAutocomplete(); return; }
-  autocomplete.innerHTML = items.map((it, i) => `
-    <div class="ac-item" data-idx="${i}" data-domain="${escHtml(it.domain)}">
-      <img src="${escHtml(pngUrl(it.domain))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-      <div class="ac-item-text">
-        <div class="ac-item-name">${escHtml(it.name)}</div>
-        <div class="ac-item-domain">${escHtml(it.domain)}</div>
-      </div>
-    </div>`).join('<div class="ac-divider"></div>');
-  autocomplete.classList.add('open');
-
-  autocomplete.querySelectorAll('.ac-item').forEach(el => {
-    el.addEventListener('mousedown', e => {
-      e.preventDefault();
-      const idx = parseInt(el.dataset.idx);
-      selectAcItem(idx);
-    });
-  });
+/* ══════════════════════════════════════════════════════
+   AUTOCOMPLETE
+══════════════════════════════════════════════════════ */
+function showAC(items) {
+  acItems = items; acIdx = -1;
+  if (!items.length) { hideAC(); return; }
+  acEl.innerHTML = items.map((it,i) => `
+    <div class="ac-item" data-i="${i}">
+      <img src="${esc(logoPng(it.domain))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"/>
+      <div><div class="ac-item-name">${esc(it.name)}</div><div class="ac-item-domain">${esc(it.domain)}</div></div>
+    </div>`).join('<div class="ac-div"></div>');
+  acEl.classList.add('open');
+  acEl.querySelectorAll('.ac-item').forEach(el =>
+    el.addEventListener('mousedown', e => { e.preventDefault(); pickAC(+el.dataset.i); }));
 }
+const hideAC = () => { acEl.classList.remove('open'); acEl.innerHTML=''; acItems=[]; acIdx=-1; };
+function pickAC(i) { const it=acItems[i]; if(!it) return; searchInput.value=it.name; hideAC(); doSearch(it.name,[it]); }
+function hlAC(i) { acEl.querySelectorAll('.ac-item').forEach((el,j)=>el.classList.toggle('focused',j===i)); }
 
-function hideAutocomplete() {
-  autocomplete.classList.remove('open');
-  autocomplete.innerHTML = '';
-  acResults = [];
-  acFocused = -1;
-}
+/* ══════════════════════════════════════════════════════
+   MAIN SEARCH FLOW
+══════════════════════════════════════════════════════ */
+async function doSearch(raw, known=null) {
+  const q = raw.trim(); if (!q) { toast('Enter a company name or domain.','er'); return; }
+  hideAC(); setBusy(true); showSkels(8); addHist(q);
 
-function selectAcItem(idx) {
-  const item = acResults[idx];
-  if (!item) return;
-  searchInput.value = item.name;
-  hideAutocomplete();
-  performSearch(item.name, [item]);   // search with known results
-}
-
-function highlightAcItem(idx) {
-  autocomplete.querySelectorAll('.ac-item').forEach((el, i) => {
-    el.classList.toggle('focused', i === idx);
-  });
-}
-
-/* ── MAIN SEARCH ── */
-async function performSearch(rawQuery, knownResults = null) {
-  const q = rawQuery.trim();
-  if (!q) { showToast('Please enter a company name or domain.', 'error'); return; }
-
-  hideAutocomplete();
-  setSearchLoading(true);
-  showSkeletons(6);
-  addToHistory(q);
-
-  let matches = knownResults;
-  if (!matches) {
-    matches = await fetchSuggestions(q);
+  let matches = known || await searchApi(q);
+  if (!matches.length) {
+    const d = normDomain(q);
+    matches = [{ name: dispName(d), domain: d }];
   }
+  const capped = matches.slice(0, 12);
+  curResults = capped;
 
-  // Fallback: if API returns nothing, treat the input as a domain directly
-  if (!matches || !matches.length) {
-    const domain = normaliseDomain(q);
-    const name   = displayName(domain);
-    matches = [{ name, domain }];
-  }
-
-  // Probe SVG availability for all matches in parallel (capped to keep it snappy)
-  const cap     = Math.min(matches.length, 12);
-  const sliced  = matches.slice(0, cap);
-  await Promise.all(sliced.map(m => hasSvg(m.domain)));
-
-  setSearchLoading(false);
-  renderResults(sliced, q);
+  setBusy(false);
+  // Render cards immediately with "resolving" state
+  renderCards(capped, q);
+  // Then resolve sources asynchronously per card
+  capped.forEach(r => resolveAndUpdateCard(r.domain, r.name));
+  updateBrowserTab();
 }
 
-function normaliseDomain(raw) {
-  raw = raw.trim().toLowerCase().replace(/^https?:\/\//i, '');
+const normDomain = raw => {
+  raw = raw.trim().toLowerCase().replace(/^https?:\/\//i,'');
   if (/\.[a-z]{2,}/.test(raw)) return raw.split('/')[0];
-  return raw.replace(/\s+/g, '') + '.com';
-}
-
-function displayName(domain) {
-  const stem = domain.split('.')[0];
-  return stem.charAt(0).toUpperCase() + stem.slice(1);
-}
-
-function setSearchLoading(on) {
+  return raw.replace(/\s+/g,'') + '.com';
+};
+const dispName = d => { const s=d.split('.')[0]; return s[0].toUpperCase()+s.slice(1); };
+function setBusy(on) {
   searchBtn.disabled = on;
   searchBtn.innerHTML = on
     ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Searching…`
     : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search`;
 }
 
-/* ── RENDER ── */
-function showSkeletons(n) {
-  const sk = Array(n).fill(`
-    <div class="skeleton-card">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-body">
-        <div class="skeleton-line"></div>
-        <div class="skeleton-line short"></div>
-      </div>
-    </div>`).join('');
-  resultsArea.innerHTML = `<div class="results-header"><h2>Searching…</h2></div><div class="cards-grid">${sk}</div>`;
+/* ══════════════════════════════════════════════════════
+   RENDER — initial pass (sources not yet resolved)
+══════════════════════════════════════════════════════ */
+function showSkels(n) {
+  const sk = `<div class="skel"><div class="skel-img"></div><div class="skel-body"><div class="skel-line"></div><div class="skel-line s"></div></div></div>`;
+  resultsArea.innerHTML = `<div class="results-header"><h2>Searching…</h2></div><div class="cards-grid">${sk.repeat(n)}</div>`;
 }
 
-function renderResults(results, query) {
+function renderCards(results, query) {
   if (!results.length) {
-    resultsArea.innerHTML = `
-      <div class="state-box error">
-        <div class="state-icon">😕</div>
-        <h3>No Results Found</h3>
-        <p>No companies matched "<strong>${escHtml(query)}</strong>". Try a different name or domain.</p>
-      </div>`;
+    resultsArea.innerHTML = `<div class="state-box error"><div class="ico">😕</div><h3>No Results</h3><p>No companies matched "<strong>${esc(query)}</strong>".</p></div>`;
     return;
   }
-
-  const header = `
-    <div class="results-header">
-      <h2>Results for "${escHtml(query)}"</h2>
-      <span class="results-count">${results.length} match${results.length !== 1 ? 'es' : ''}</span>
-    </div>`;
-
-  const cards = results.map(r => buildCard(r)).join('');
+  const header = `<div class="results-header"><h2>Results for "${esc(query)}"</h2><span class="results-count">${results.length} match${results.length!==1?'es':''}</span></div>`;
+  const cards  = results.map(r => buildCardInitial(r)).join('');
   resultsArea.innerHTML = `${header}<div class="cards-grid">${cards}</div>`;
 
-  // Attach interactions
-  resultsArea.querySelectorAll('.logo-card').forEach(card => {
-    const domain  = card.dataset.domain;
-    const name    = card.dataset.name;
-    const hasSVG  = card.dataset.svg === '1';
-
-    card.querySelector('.fav-btn').addEventListener('click', () => {
-      const added = toggleFavorite({ domain, name, logoUrl: pngUrl(domain) });
-      card.querySelector('.fav-btn').classList.toggle('active', added);
-      showToast(added ? '💛 Added to favorites' : 'Removed from favorites', added ? 'success' : 'info');
-    });
-
-    card.querySelector('.btn-svg').addEventListener('click', () => {
-      if (hasSVG) downloadSvg(domain, name);
-      else downloadPng(pngUrl(domain), domain, name);
-    });
-
-    card.querySelector('.btn-png').addEventListener('click', () => downloadPng(pngUrl(domain), domain, name));
-    card.querySelector('.btn-copy-png').addEventListener('click', e => copyAsPng(pngUrl(domain), e.currentTarget));
-    card.querySelector('.btn-open').addEventListener('click', () => window.open(pngUrl(domain), '_blank'));
-  });
+  // Wire static buttons that don't depend on resolved sources
+  results.forEach(r => wireCardStatic(r.domain, r.name));
 }
 
-function buildCard(r) {
-  const svgAvail = svgAvailCache[r.domain] === true;
-  const fav      = isFavorite(r.domain);
-  const preview  = pngUrl(r.domain);
-
-  const badgeHtml = svgAvail
-    ? `<span class="svg-badge">SVG</span>`
-    : `<span class="png-badge">PNG</span>`;
-
-  const svgBtnLabel = svgAvail
-    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save as SVG`
-    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save as PNG`;
-
+function buildCardInitial(r) {
   return `
-    <div class="logo-card" data-domain="${escHtml(r.domain)}" data-name="${escHtml(r.name)}" data-svg="${svgAvail ? 1 : 0}">
+    <div class="logo-card" id="card-${esc(r.domain.replace(/\./g,'_'))}" data-domain="${esc(r.domain)}" data-name="${esc(r.name)}">
       <div class="card-img-wrap">
-        <img src="${escHtml(preview)}" alt="${escHtml(r.name)} logo" loading="lazy" onerror="this.closest('.logo-card').classList.add('img-err')" />
-        ${badgeHtml}
-        <button class="fav-btn ${fav ? 'active' : ''}" title="${fav ? 'Remove from favorites' : 'Add to favorites'}">${fav ? '💛' : '🤍'}</button>
+        <img id="cimg-${esc(r.domain.replace(/\./g,'_'))}" src="${esc(logoPng(r.domain))}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.opacity='.15'"/>
+        <span class="src-badge resolving" id="badge-${esc(r.domain.replace(/\./g,'_'))}">⏳ checking…</span>
+        <button class="fav-btn ${isFav(r.domain)?'active':''}" id="fav-${esc(r.domain.replace(/\./g,'_'))}" title="${isFav(r.domain)?'Remove favorite':'Add to favorites'}">${isFav(r.domain)?'💛':'🤍'}</button>
+      </div>
+      <div class="card-sources" id="csrc-${esc(r.domain.replace(/\./g,'_'))}">
+        <span style="font-size:.7rem;color:var(--muted);align-self:center">Sources:</span>
+        <span class="src-chip resolving" style="opacity:.5">loading…</span>
       </div>
       <div class="card-body">
-        <div class="card-title">${escHtml(r.name)}</div>
-        <div class="card-domain">${escHtml(r.domain)}</div>
+        <div class="card-title">${esc(r.name)}</div>
+        <div class="card-domain">${esc(r.domain)}</div>
       </div>
-      <div class="card-actions">
-        <button class="btn-svg" title="${svgAvail ? 'Download SVG (best quality, scalable)' : 'SVG not available — download PNG'}">${svgBtnLabel}</button>
-        <div class="card-actions-row">
-          <button class="card-btn btn-png" title="Save as PNG">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            PNG
-          </button>
-          <button class="card-btn btn-copy-png" title="Copy logo image to clipboard">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copy
-          </button>
-          <button class="card-btn btn-open" title="Open image in new tab">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Open
-          </button>
+      <div class="card-actions" id="cact-${esc(r.domain.replace(/\./g,'_'))}">
+        <button class="btn-primary-dl" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Resolving sources…
+        </button>
+        <div class="card-row">
+          <button class="card-btn btn-png">PNG</button>
+          <button class="card-btn btn-copy">Copy</button>
+          <button class="card-btn btn-open">Open</button>
         </div>
+        <button class="btn-convert">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+          Convert PNG → SVG <span style="font-size:.63rem;opacity:.8">(experimental)</span>
+        </button>
       </div>
     </div>`;
 }
 
-/* ── DOWNLOAD ACTIONS ── */
-async function downloadSvg(domain, name) {
-  try {
-    showToast('Downloading SVG…', 'info');
-    const r = await fetch(svgUrl(domain));
-    if (!r.ok) throw new Error();
-    const text = await r.text();
-    const blob = new Blob([text], { type: 'image/svg+xml' });
-    triggerDownload(blob, `${domain}_logo.svg`);
-    showToast('✅ SVG downloaded!', 'success');
-  } catch {
-    showToast('SVG download failed — trying PNG.', 'error');
-    downloadPng(pngUrl(domain), domain, name);
+function wireCardStatic(domain, name) {
+  const key  = domain.replace(/\./g,'_');
+  const card = document.getElementById('card-' + key);
+  if (!card) return;
+
+  card.querySelector('.btn-png').addEventListener('click',  () => dlPng(logoPng(domain), domain));
+  card.querySelector('.btn-copy').addEventListener('click', e  => copyPng(logoPng(domain), e.currentTarget));
+  card.querySelector('.btn-open').addEventListener('click', () => window.open(logoPng(domain),'_blank'));
+  card.querySelector('.btn-convert').addEventListener('click', e => convertToSvg(logoPng(domain), domain, name, e.currentTarget));
+
+  document.getElementById('fav-' + key).addEventListener('click', () => {
+    const added = toggleFav({ domain, name, logoUrl: logoPng(domain) });
+    const btn = document.getElementById('fav-' + key);
+    btn.classList.toggle('active', added);
+    btn.innerHTML = added ? '💛' : '🤍';
+    toast(added ? '💛 Added to favorites' : 'Removed from favorites', added ? 'ok' : 'in');
+  });
+}
+
+/* ══════════════════════════════════════════════════════
+   ASYNC UPDATE — update card after sources resolve
+══════════════════════════════════════════════════════ */
+async function resolveAndUpdateCard(domain, name) {
+  const key = domain.replace(/\./g,'_');
+  const resolved = await resolveLogoSources(domain, name);
+  const { sources, active } = resolved;
+
+  // Update badge
+  const badge = document.getElementById('badge-' + key);
+  if (badge) {
+    const isSvg = active !== 'png';
+    badge.className = `src-badge ${isSvg ? 'svg' : 'png'}`;
+    badge.textContent = isSvg ? 'SVG' : 'PNG';
   }
-}
 
-async function downloadPng(url, domain) {
-  try {
-    showToast('Downloading PNG…', 'info');
-    const r = await fetch(url);
-    if (!r.ok) throw new Error();
-    const blob = await r.blob();
-    triggerDownload(blob, `${domain}_logo.png`);
-    showToast('✅ PNG downloaded!', 'success');
-  } catch {
-    window.open(url, '_blank');
-    showToast('Direct download unavailable — opened in new tab.', 'error');
-  }
-}
-
-function triggerDownload(blob, filename) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-/* ── COPY LOGO AS PNG ──
-   Draws the image onto a canvas, reads back as PNG blob, writes to clipboard. */
-async function copyAsPng(url, btn) {
-  try {
-    // Load image — needs crossOrigin for canvas taint
-    const img = await loadImage(url);
-    const canvas = document.createElement('canvas');
-    canvas.width  = img.naturalWidth  || 200;
-    canvas.height = img.naturalHeight || 200;
-    canvas.getContext('2d').drawImage(img, 0, 0);
-
-    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-    if (!blob) throw new Error('Canvas toBlob failed');
-
-    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-
-    btn.classList.add('copied');
-    const orig = btn.innerHTML;
-    btn.textContent = '✓ Copied!';
-    showToast('PNG copied to clipboard!', 'success');
-    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
-  } catch (err) {
-    // Fallback: copy URL as text
-    try {
-      await navigator.clipboard.writeText(url);
-      showToast('Image clipboard not supported — URL copied instead.', 'info');
-    } catch {
-      showToast('Clipboard access denied.', 'error');
+  // Update preview image to best SVG source if available
+  const img = document.getElementById('cimg-' + key);
+  if (img && active !== 'png') {
+    const svgSrc = sources[active];
+    if (svgSrc) {
+      const testImg = new Image(); testImg.crossOrigin = 'anonymous';
+      testImg.onload = () => { img.src = svgSrc; };
+      testImg.src = svgSrc;
     }
   }
+
+  // Build source chips — show SVG options (numbered if multiple) + PNG
+  const csrc = document.getElementById('csrc-' + key);
+  if (csrc) {
+    const svgOptions = [
+      { key: 'iconify',   url: sources.iconify   },
+      { key: 'wikimedia', url: sources.wikimedia },
+      { key: 'logodev',   url: sources.logodev   },
+    ].filter(c => c.url);
+
+    const allChips = [
+      ...svgOptions.map((c, i) => ({
+        key: c.key, url: c.url,
+        label: svgOptions.length > 1 ? `SVG ${i + 1}` : 'SVG',
+        cls: 'svg-opt'
+      })),
+      { key: 'png', url: sources.png, label: 'PNG', cls: 'png' }
+    ];
+
+    csrc.innerHTML = '<span style="font-size:.7rem;color:var(--muted);align-self:center">Format:</span>' +
+      allChips.map(c => `
+        <button class="src-chip ${c.cls} ${c.key===active?'active':''}"
+          data-domain="${esc(domain)}" data-src="${c.key}" data-url="${esc(c.url)}"
+          title="${c.cls==='png'?'PNG fallback':'Vector SVG — scalable, no quality loss'}">
+          ${c.label}
+        </button>`).join('');
+
+    csrc.querySelectorAll('.src-chip').forEach(btn => {
+      btn.addEventListener('click', () => switchSource(domain, name, btn.dataset.src, btn.dataset.url));
+    });
+  }
+
+  // Update primary download button
+  updatePrimaryBtn(domain, active, sources[active] || sources.png);
 }
 
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload  = () => resolve(img);
-    img.onerror = reject;
-    img.src     = src;
-  });
+function switchSource(domain, name, srcKey, url) {
+  const key = domain.replace(/\./g,'_');
+  // Update active chip
+  document.querySelectorAll(`#csrc-${key} .src-chip`).forEach(b =>
+    b.classList.toggle('active', b.dataset.src === srcKey));
+  // Update preview
+  const img = document.getElementById('cimg-' + key);
+  if (img) { img.src = url; }
+  // Update badge
+  const badge = document.getElementById('badge-' + key);
+  if (badge) {
+    const isSvg = srcKey !== 'png';
+    badge.className = `src-badge ${isSvg ? 'svg' : 'png'}`;
+    badge.textContent = isSvg ? 'SVG' : 'PNG';
+  }
+  // Update primary button
+  updatePrimaryBtn(domain, srcKey, url);
+  // Cache the user's choice as active
+  if (logoCache[domain]) logoCache[domain].active = srcKey;
 }
 
-/* ── HISTORY RENDER ── */
-function renderHistory() {
-  const h = readLS(LS_HISTORY);
-  if (!h.length) { historyList.innerHTML = '<div class="empty-panel"><div class="ep-icon">🕐</div>No recent searches</div>'; return; }
-  historyList.innerHTML = h.map(q => `
-    <div class="history-item" data-query="${escHtml(q)}">
-      <span class="h-icon">🔍</span>
-      <span class="h-text">${escHtml(q)}</span>
-      <button class="h-del" title="Remove">✕</button>
-    </div>`).join('');
-  historyList.querySelectorAll('.history-item').forEach(item => {
-    item.addEventListener('click', e => {
-      if (e.target.classList.contains('h-del')) {
-        e.stopPropagation();
-        const h2 = readLS(LS_HISTORY).filter(q => q !== item.dataset.query);
-        writeLS(LS_HISTORY, h2);
-        renderHistory();
-        return;
+function updatePrimaryBtn(domain, srcKey, url) {
+  const key  = domain.replace(/\./g,'_');
+  const act  = document.querySelector(`#cact-${key} .btn-primary-dl`);
+  if (!act) return;
+  const isSvg = srcKey !== 'png';
+  act.className = `btn-primary-dl ${isSvg ? '' : 'png-mode'}`;
+  act.disabled  = false;
+  act.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save as ${isSvg ? 'SVG' : 'PNG'}`;
+  // Re-wire primary download
+  act.onclick = () => isSvg ? dlSvgFromUrl(url, domain) : dlPng(url, domain);
+}
+
+/* ══════════════════════════════════════════════════════
+   DOWNLOAD HELPERS
+══════════════════════════════════════════════════════ */
+function trigger(blob, filename) {
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename });
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+async function dlSvgFromUrl(url, domain) {
+  try {
+    toast('Downloading SVG…','in');
+    const r = await fetch(url);
+    if (!r.ok) throw 0;
+    const text = await r.text();
+    trigger(new Blob([text], { type: 'image/svg+xml' }), `${domain}_logo.svg`);
+    toast('✅ SVG downloaded!','ok');
+  } catch { toast('SVG download failed.','er'); }
+}
+
+async function dlPng(url, domain) {
+  try {
+    toast('Downloading PNG…','in');
+    const r = await fetch(url);
+    if (!r.ok) throw 0;
+    trigger(await r.blob(), `${domain}_logo.png`);
+    toast('✅ PNG downloaded!','ok');
+  } catch { window.open(url,'_blank'); toast('Direct download blocked — opened in tab.','er'); }
+}
+
+async function copyPng(url, btn) {
+  try {
+    const img = await loadImg(url);
+    const cv  = document.createElement('canvas');
+    cv.width  = img.naturalWidth || 200;
+    cv.height = img.naturalHeight|| 200;
+    cv.getContext('2d').drawImage(img, 0, 0);
+    const blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    const orig = btn.innerHTML; btn.classList.add('copied'); btn.textContent='✓ Copied!';
+    toast('PNG copied to clipboard!','ok');
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML=orig; }, 2000);
+  } catch {
+    try { await navigator.clipboard.writeText(url); toast('Image copy blocked — URL copied instead.','in'); }
+    catch { toast('Clipboard access denied.','er'); }
+  }
+}
+
+const loadImg = src => new Promise((res, rej) => {
+  const img = new Image(); img.crossOrigin='anonymous';
+  img.onload=()=>res(img); img.onerror=rej; img.src=src;
+});
+
+/* ══════════════════════════════════════════════════════
+   PNG → SVG CONVERSION (Experimental, ImageTracer.js)
+══════════════════════════════════════════════════════ */
+async function convertToSvg(url, domain, name, btn) {
+  try { await loadTracer(); } catch { toast('Tracer library unavailable (network?).','er'); return; }
+  const orig = btn.innerHTML; btn.disabled=true;
+  btn.innerHTML=`<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Converting…`;
+  try {
+    const svg = await pngToSvgStr(url);
+    trigger(new Blob([svg], { type:'image/svg+xml' }), `${domain}_traced.svg`);
+    toast('✅ Converted & downloaded! (quality varies)','ok');
+  } catch { toast('Conversion failed — try a different logo.','er'); }
+  finally { btn.disabled=false; btn.innerHTML=orig; }
+}
+
+async function pngToSvgStr(url) {
+  if (typeof ImageTracer === 'undefined') throw new Error('ImageTracer not loaded');
+  const img   = await loadImg(url);
+  const cv    = document.createElement('canvas');
+  const scale = Math.min(4, 256 / Math.max(img.naturalWidth, img.naturalHeight, 1));
+  cv.width    = Math.round((img.naturalWidth||64) * scale);
+  cv.height   = Math.round((img.naturalHeight||64) * scale);
+  cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+  return ImageTracer.imagedataToSVG(
+    cv.getContext('2d').getImageData(0, 0, cv.width, cv.height),
+    { numberofcolors:16, pathomit:8, ltres:1, qtres:1, scale:1, strokewidth:0, desc:false, viewbox:true }
+  );
+}
+
+/* ══════════════════════════════════════════════════════
+   BULK DOWNLOAD
+══════════════════════════════════════════════════════ */
+function parseText(raw) {
+  return [...new Set(
+    raw.split(/[\n,;\t]+/)
+      .map(s => s.trim().toLowerCase())
+      .filter(s => s.length > 1 && !/^(company|domain|name|url|website|brand)$/i.test(s))
+      .map(normDomain)
+  )];
+}
+
+async function readFile(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext==='txt'||ext==='csv') return parseText(await file.text());
+  if (ext==='xlsx'||ext==='xls') {
+    await loadXLSX();
+    if (typeof XLSX === 'undefined') throw new Error('SheetJS failed to load');
+    const wb   = XLSX.read(await file.arrayBuffer(), { type:'array' });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header:1, defval:'' });
+    return parseText(rows.map(r => String(r[0]||'')).join('\n'));
+  }
+  throw new Error('Unsupported file type');
+}
+
+async function getBulkDomains() {
+  const tab = document.querySelector('.btab.active').dataset.tab;
+  if (tab==='text')    return parseText($('bulkTextarea').value);
+  if (tab==='file')    { if (!bulkParsed.length) throw new Error('No file loaded.'); return bulkParsed; }
+  if (tab==='browser') { if (!curResults.length) throw new Error('Run a search first.'); return curResults.map(r=>r.domain); }
+  return [];
+}
+
+function updateBrowserTab() {
+  const el = $('browserTabContent');
+  if (!curResults.length) return;
+  el.innerHTML = `<p style="font-size:.85rem;color:var(--muted);margin-bottom:10px"><strong style="color:var(--brand)">${curResults.length}</strong> companies from last search — all will be included.</p>
+  <div style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto">
+    ${curResults.map(r=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2)">
+        <img src="${esc(logoPng(r.domain))}" style="width:24px;height:24px;object-fit:contain;border-radius:4px;background:#fff;border:1px solid var(--border);padding:1px" onerror="this.style.opacity='.15'"/>
+        <div><div style="font-size:.82rem;font-weight:600">${esc(r.name)}</div><div style="font-size:.72rem;color:var(--muted)">${esc(r.domain)}</div></div>
+      </div>`).join('')}
+  </div>`;
+}
+
+async function runBulk() {
+  if (bulkRunning) return;
+  let domains;
+  try { domains = await getBulkDomains(); } catch(e) { toast(e.message,'er'); return; }
+  if (!domains.length) { toast('No valid companies found in input.','er'); return; }
+
+  bulkRunning = true;
+  const sBtn = $('startBulkBtn');
+  sBtn.disabled = true;
+  sBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Processing…`;
+
+  try { await loadJSZip(); } catch { toast('JSZip unavailable (network?).','er'); bulkRunning=false; sBtn.disabled=false; sBtn.innerHTML='Download ZIP'; return; }
+
+  const prog = $('bulkProg'); prog.classList.add('on');
+  const fill = $('progFill'), ptxt = $('progText'), pcnt = $('progCount'), plog = $('progLog');
+  plog.innerHTML='';
+
+  const convertOpt = $('optConvertSvg').checked;
+  const skipOpt    = $('optSkipFailed').checked;
+  const zip = new JSZip();
+  let done=0, total=domains.length;
+
+  const logLine = (msg, cls) => { const d=document.createElement('div'); d.className=cls; d.textContent=msg; plog.appendChild(d); plog.scrollTop=plog.scrollHeight; };
+  const setProgress = () => { fill.style.width=Math.round(done/total*100)+'%'; pcnt.textContent=done+'/'+total; };
+
+  for (const domain of domains) {
+    ptxt.textContent = 'Resolving: ' + domain; setProgress();
+    const name = dispName(domain);
+    try {
+      const { sources, active } = await resolveLogoSources(domain, name);
+      const bestSvgKey = ['iconify','wikimedia','logodev'].find(k => sources[k]);
+
+      if (bestSvgKey) {
+        const r = await fetch(sources[bestSvgKey]);
+        if (!r.ok) throw new Error('fetch ' + r.status);
+        zip.file(`logos/${domain}.svg`, await r.text());
+        logLine(`✓ ${domain} — SVG`, 'lok');
+      } else if (convertOpt) {
+        try {
+          await loadTracer();
+          zip.file(`logos/${domain}.svg`, await pngToSvgStr(sources.png));
+          logLine(`✓ ${domain} — SVG (converted)`, 'lok');
+        } catch {
+          const r = await fetch(sources.png);
+          if (!r.ok) throw new Error('fetch ' + r.status);
+          zip.file(`logos/${domain}.png`, await r.blob());
+          logLine(`~ ${domain} — PNG`, 'linfo');
+        }
+      } else {
+        const r = await fetch(sources.png);
+        if (!r.ok) throw new Error('fetch ' + r.status);
+        const blob = await r.blob();
+        if (blob.size < 200) throw new Error('placeholder');
+        zip.file(`logos/${domain}.png`, blob);
+        logLine(`~ ${domain} — PNG`, 'linfo');
       }
-      searchInput.value = item.dataset.query;
-      performSearch(item.dataset.query);
-    });
-  });
+    } catch(e) {
+      if (skipOpt) logLine(`⚠ ${domain} — skipped: ${e.message}`, 'lskip');
+      else         logLine(`✗ ${domain} — error: ${e.message}`, 'lerr');
+    }
+    done++; setProgress();
+  }
+
+  ptxt.textContent = 'Creating ZIP…';
+  try {
+    const zipBlob = await zip.generateAsync({ type:'blob' });
+    trigger(zipBlob, `GEP_Logos_${new Date().toISOString().slice(0,10)}.zip`);
+    toast(`✅ ZIP downloaded — ${done} logos processed!`,'ok');
+    logLine(`─── Complete: ${done} logos ───`, 'lok');
+  } catch(e) { toast('ZIP generation failed: '+e.message,'er'); }
+
+  bulkRunning=false; sBtn.disabled=false;
+  sBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download ZIP`;
 }
 
-/* ── FAVORITES RENDER ── */
-function renderFavorites() {
-  const favs = readLS(LS_FAVORITES);
-  if (!favs.length) { favList.innerHTML = '<div class="empty-panel"><div class="ep-icon">💛</div>No favorites saved yet</div>'; return; }
-  favList.innerHTML = favs.map(f => `
-    <div class="fav-item" data-domain="${escHtml(f.domain)}">
-      <img src="${escHtml(f.logoUrl)}" alt="${escHtml(f.name)}" loading="lazy" />
-      <div class="fav-item-info">
-        <div class="fi-name">${escHtml(f.name)}</div>
-        <div class="fi-domain">${escHtml(f.domain)}</div>
-      </div>
-      <button class="fav-remove" title="Remove">✕</button>
+/* ══════════════════════════════════════════════════════
+   HISTORY & FAVORITES
+══════════════════════════════════════════════════════ */
+function renderHist() {
+  const h = readLS(LS_HIST);
+  if (!h.length) { histList.innerHTML='<div class="ep"><div class="ei">🕐</div>No recent searches</div>'; return; }
+  histList.innerHTML = h.map(q=>`
+    <div class="hist-item" data-q="${esc(q)}">
+      <span style="font-size:.9rem;flex-shrink:0">🔍</span>
+      <span class="ht">${esc(q)}</span>
+      <button class="hd" title="Remove">✕</button>
     </div>`).join('');
-  favList.querySelectorAll('.fav-item').forEach(item => {
-    item.querySelector('.fav-remove').addEventListener('click', () => {
-      const domain = item.dataset.domain;
-      writeLS(LS_FAVORITES, readLS(LS_FAVORITES).filter(f => f.domain !== domain));
-      renderFavorites();
-      const card = resultsArea.querySelector(`.logo-card[data-domain="${domain}"] .fav-btn`);
-      if (card) { card.classList.remove('active'); card.innerHTML = '🤍'; }
-      showToast('Removed from favorites', 'info');
+  histList.querySelectorAll('.hist-item').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target.classList.contains('hd')) {
+        writeLS(LS_HIST, readLS(LS_HIST).filter(q=>q!==el.dataset.q)); renderHist(); return;
+      }
+      searchInput.value = el.dataset.q; doSearch(el.dataset.q);
     });
   });
 }
 
-function exportFavorites() {
-  const favs = readLS(LS_FAVORITES);
-  if (!favs.length) { showToast('No favorites to export.', 'error'); return; }
-  triggerDownload(new Blob([JSON.stringify(favs, null, 2)], { type: 'application/json' }), 'gep_logo_favorites.json');
-  showToast('✅ Favorites exported!', 'success');
+function renderFavs() {
+  const f = readLS(LS_FAVS);
+  if (!f.length) { favListEl.innerHTML='<div class="ep"><div class="ei">💛</div>No favorites yet</div>'; return; }
+  favListEl.innerHTML = f.map(x=>`
+    <div class="fav-item" data-d="${esc(x.domain)}">
+      <img src="${esc(x.logoUrl)}" alt="${esc(x.name)}" loading="lazy"/>
+      <div class="fav-info"><div class="fn">${esc(x.name)}</div><div class="fd">${esc(x.domain)}</div></div>
+      <button class="fav-rm" title="Remove">✕</button>
+    </div>`).join('');
+  favListEl.querySelectorAll('.fav-item').forEach(el => {
+    el.querySelector('.fav-rm').addEventListener('click', () => {
+      writeLS(LS_FAVS, readLS(LS_FAVS).filter(x=>x.domain!==el.dataset.d));
+      renderFavs();
+      const b = resultsArea.querySelector(`.fav-btn[id="fav-${el.dataset.d.replace(/\./g,'_')}"]`);
+      if (b) { b.classList.remove('active'); b.innerHTML='🤍'; }
+      toast('Removed from favorites','in');
+    });
+  });
 }
 
-/* ── TOAST ── */
-function showToast(msg, type = 'info') {
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.textContent = msg;
-  toastContainer.appendChild(el);
-  setTimeout(() => {
-    el.style.animation = 'fadeOut .3s ease forwards';
-    el.addEventListener('animationend', () => el.remove());
-  }, 2800);
+/* ══════════════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════════════ */
+function toast(msg, type='in') {
+  const el = Object.assign(document.createElement('div'), { className:`toast ${type}`, textContent:msg });
+  toastWrap.appendChild(el);
+  setTimeout(() => { el.style.animation='slOut .3s ease forwards'; el.addEventListener('animationend',()=>el.remove()); }, 2800);
 }
 
-/* ── UTILS ── */
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-}
+/* ══════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════ */
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
-/* ── EVENT LISTENERS ── */
-searchBtn.addEventListener('click', () => performSearch(searchInput.value));
-
+/* ══════════════════════════════════════════════════════
+   EVENT WIRING
+══════════════════════════════════════════════════════ */
+searchBtn.addEventListener('click', () => doSearch(searchInput.value));
 searchInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    if (acFocused >= 0 && acResults[acFocused]) { selectAcItem(acFocused); return; }
-    performSearch(searchInput.value);
-    return;
-  }
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    acFocused = Math.min(acFocused + 1, acResults.length - 1);
-    highlightAcItem(acFocused);
-  }
-  if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    acFocused = Math.max(acFocused - 1, 0);
-    highlightAcItem(acFocused);
-  }
-  if (e.key === 'Escape') hideAutocomplete();
+  if (e.key==='Enter')     { acIdx>=0 ? pickAC(acIdx) : doSearch(searchInput.value); return; }
+  if (e.key==='ArrowDown') { e.preventDefault(); acIdx=Math.min(acIdx+1,acItems.length-1); hlAC(acIdx); }
+  if (e.key==='ArrowUp')   { e.preventDefault(); acIdx=Math.max(acIdx-1,0); hlAC(acIdx); }
+  if (e.key==='Escape')    hideAC();
 });
-
 searchInput.addEventListener('input', () => {
-  clearTimeout(debounceTimer);
+  clearTimeout(debTimer);
   const q = searchInput.value.trim();
-  if (!q) { hideAutocomplete(); return; }
-  debounceTimer = setTimeout(async () => {
-    const items = await fetchSuggestions(q);
-    if (searchInput.value.trim() === q) showAutocomplete(items);
-  }, 280);
+  if (!q) { hideAC(); return; }
+  debTimer = setTimeout(async () => {
+    const items = await searchApi(q);
+    if (searchInput.value.trim()===q) showAC(items);
+  }, 260);
+});
+document.addEventListener('mousedown', e => { if (!$('searchWrap').contains(e.target)) hideAC(); });
+
+$('clearHistBtn').addEventListener('click', () => { writeLS(LS_HIST,[]); renderHist(); toast('History cleared.','in'); });
+$('clearFavsBtn').addEventListener('click', () => {
+  writeLS(LS_FAVS,[]); renderFavs();
+  resultsArea.querySelectorAll('.fav-btn.active').forEach(b=>{ b.classList.remove('active'); b.innerHTML='🤍'; });
+  toast('Favorites cleared.','in');
+});
+$('expFavsBtn').addEventListener('click', () => {
+  const f=readLS(LS_FAVS); if(!f.length){toast('No favorites to export.','er');return;}
+  trigger(new Blob([JSON.stringify(f,null,2)],{type:'application/json'}),'gep_logo_favorites.json');
+  toast('✅ Favorites exported!','ok');
 });
 
-// Close autocomplete when clicking outside
-document.addEventListener('mousedown', e => {
-  if (!document.getElementById('searchWrap').contains(e.target)) hideAutocomplete();
+// Bulk modal
+$('openBulkBtn').addEventListener('click', () => { $('bulkModal').classList.remove('hidden'); updateBrowserTab(); });
+['closeBulk','closeBulk2'].forEach(id => $(id).addEventListener('click', () => { if(!bulkRunning) $('bulkModal').classList.add('hidden'); }));
+$('bulkModal').addEventListener('click', e => { if(e.target===$('bulkModal')&&!bulkRunning) $('bulkModal').classList.add('hidden'); });
+document.addEventListener('keydown', e => { if(e.key==='Escape'&&!$('bulkModal').classList.contains('hidden')&&!bulkRunning) $('bulkModal').classList.add('hidden'); });
+
+// Bulk tabs
+document.querySelectorAll('.btab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.btab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    $('tab-'+btn.dataset.tab).classList.add('active');
+  });
 });
 
-clearHistoryBtn.addEventListener('click', () => { writeLS(LS_HISTORY, []); renderHistory(); showToast('History cleared.', 'info'); });
-clearFavsBtn.addEventListener('click', () => {
-  writeLS(LS_FAVORITES, []);
-  renderFavorites();
-  resultsArea.querySelectorAll('.fav-btn.active').forEach(b => { b.classList.remove('active'); b.innerHTML = '🤍'; });
-  showToast('Favorites cleared.', 'info');
-});
-exportFavsBtn.addEventListener('click', exportFavorites);
+// File upload
+const uZone = $('uploadZone'), fInput = $('fileInput');
+uZone.addEventListener('click', () => fInput.click());
+uZone.addEventListener('dragover', e => { e.preventDefault(); uZone.classList.add('drag'); });
+uZone.addEventListener('dragleave', () => uZone.classList.remove('drag'));
+uZone.addEventListener('drop', async e => { e.preventDefault(); uZone.classList.remove('drag'); if(e.dataTransfer.files[0]) await handleFile(e.dataTransfer.files[0]); });
+fInput.addEventListener('change', async () => { if(fInput.files[0]) await handleFile(fInput.files[0]); });
+async function handleFile(file) {
+  try {
+    bulkParsed = await readFile(file);
+    $('fileChipName').textContent = `${file.name} — ${bulkParsed.length} companies found`;
+    $('fileChip').style.display='inline-flex';
+    toast(`✅ ${bulkParsed.length} companies parsed from ${file.name}`,'ok');
+  } catch(e) { toast('Could not read file: '+e.message,'er'); }
+}
 
-/* ── INIT ── */
-renderHistory();
-renderFavorites();
+$('startBulkBtn').addEventListener('click', runBulk);
+
+/* ══════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════ */
+renderHist();
+renderFavs();
 </script>
 </body>
 </html>
