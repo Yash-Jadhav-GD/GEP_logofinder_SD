@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GEP Logo Finder</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand:       #0a3d62;
+      --brand-light: #1a6ba5;
+      --accent:      #e84393;
+      --bg:          #f0f4f8;
+      --surface:     #ffffff;
+      --surface2:    #f7f9fc;
+      --border:      #dde3ea;
+      --text:        #1a2a3a;
+      --text-muted:  #6b7c93;
+      --shadow:      0 4px 24px rgba(10,61,98,.10);
+      --shadow-sm:   0 2px 8px rgba(10,61,98,.08);
+      --radius:      14px;
+      --radius-sm:   8px;
+      --green:       #16a34a;
+      --transition:  .2s ease;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+      color: #fff;
+      padding: 0 24px;
+      box-shadow: 0 2px 12px rgba(10,61,98,.25);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo-brand { display: flex; align-items: center; gap: 10px; color: #fff; text-decoration: none; }
+    .logo-brand span { font-size: 1.2rem; font-weight: 700; letter-spacing: -.3px; }
+    .header-badge {
+      font-size: .7rem;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 20px;
+      padding: 2px 10px;
+    }
+
+    /* ── Main Layout ── */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 32px 20px 60px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: var(--brand);
+      margin-bottom: 8px;
+      letter-spacing: -.5px;
+    }
+    .hero p { color: var(--text-muted); font-size: 1rem; margin-bottom: 28px; }
+
+    /* ── Search Box ── */
+    .search-wrap {
+      display: flex;
+      gap: 10px;
+      max-width: 640px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .search-input-wrap { flex: 1; position: relative; }
+    .search-input-wrap .s-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    #searchInput {
+      width: 100%;
+      padding: 14px 14px 14px 44px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      outline: none;
+      background: var(--surface);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    #searchInput:focus {
+      border-color: var(--brand-light);
+      box-shadow: 0 0 0 3px rgba(26,107,165,.15);
+    }
+
+    /* Autocomplete dropdown */
+    #autocomplete {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      z-index: 300;
+      overflow: hidden;
+      display: none;
+    }
+    #autocomplete.open { display: block; }
+    .ac-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background var(--transition);
+      font-size: .88rem;
+    }
+    .ac-item:hover, .ac-item.focused { background: var(--surface2); }
+    .ac-item img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      border-radius: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 2px;
+      flex-shrink: 0;
+    }
+    .ac-item-text { flex: 1; overflow: hidden; }
+    .ac-item-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ac-item-domain { font-size: .75rem; color: var(--text-muted); }
+    .ac-divider { height: 1px; background: var(--border); }
+
+    #searchBtn {
+      padding: 14px 26px;
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-light) 100%);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: opacity var(--transition), transform var(--transition);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    #searchBtn:hover { opacity: .9; transform: translateY(-1px); }
+    #searchBtn:active { transform: translateY(0); }
+    #searchBtn:disabled { opacity: .6; cursor: default; transform: none; }
+
+    /* ── Grid Layout ── */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .content-grid { grid-template-columns: 1fr; } }
+
+    /* ── Results ── */
+    #resultsArea { min-height: 200px; }
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .results-header h2 { font-size: 1rem; font-weight: 700; color: var(--brand); }
+    .results-count {
+      font-size: .8rem;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 3px 10px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Logo Card ── */
+    .logo-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), box-shadow var(--transition);
+      overflow: hidden;
+    }
+    .logo-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+    .card-img-wrap {
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 150px;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-img-wrap img {
+      max-width: 100%;
+      max-height: 110px;
+      object-fit: contain;
+      transition: transform var(--transition);
+    }
+    .logo-card:hover .card-img-wrap img { transform: scale(1.06); }
+
+    /* SVG badge on card */
+    .svg-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: .65rem;
+      font-weight: 800;
+      letter-spacing: .5px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff;
+      border-radius: 5px;
+      padding: 2px 6px;
+    }
+    .png-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: .65rem;
+      font-weight: 800;
+      letter-spacing: .5px;
+      background: var(--brand-light);
+      color: #fff;
+      border-radius: 5px;
+      padding: 2px 6px;
+    }
+
+    .fav-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-size: .9rem;
+    }
+    .fav-btn:hover { background: #fff3f8; border-color: var(--accent); }
+    .fav-btn.active { background: #fff0f6; border-color: var(--accent); }
+
+    .card-body { padding: 12px 14px; }
+    .card-title { font-weight: 700; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-domain { font-size: .77rem; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Card Actions */
+    .card-actions { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-top: 1px solid var(--border); background: var(--surface2); }
+
+    /* Primary SVG button */
+    .btn-svg {
+      width: 100%;
+      padding: 9px 12px;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: .8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: opacity var(--transition), transform var(--transition);
+      letter-spacing: .2px;
+    }
+    .btn-svg:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-svg:active { transform: translateY(0); }
+    .btn-svg:disabled { opacity: .45; cursor: default; transform: none; background: #9ca3af; }
+
+    /* Secondary row */
+    .card-actions-row { display: flex; gap: 6px; }
+    .card-btn {
+      flex: 1;
+      padding: 7px 6px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: .72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all var(--transition);
+      color: var(--text);
+    }
+    .card-btn:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+    .card-btn.copied { background: var(--green); color: #fff; border-color: var(--green); }
+
+    /* ── Skeleton ── */
+    .skeleton-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+    .skeleton-img { height: 150px; background: linear-gradient(90deg,#e8ecf0 25%,#f5f7fa 50%,#e8ecf0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+    .skeleton-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+    .skeleton-line { height: 12px; border-radius: 6px; background: linear-gradient(90deg,#e8ecf0 25%,#f5f7fa 50%,#e8ecf0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+    .skeleton-line.short { width: 60%; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* ── State Boxes ── */
+    .state-box { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 48px 24px; text-align: center; color: var(--text-muted); }
+    .state-box .state-icon { font-size: 3rem; margin-bottom: 12px; }
+    .state-box h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 6px; }
+    .state-box p { font-size: .9rem; max-width: 320px; margin: 0 auto; }
+    .state-box.error { border-color: #f5c6cb; background: #fff5f5; }
+    .state-box.error h3 { color: #c0392b; }
+
+    /* ── Sidebar ── */
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .panel { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+    .panel-header h3 { font-size: .9rem; font-weight: 700; color: var(--brand); display: flex; align-items: center; gap: 6px; }
+    .panel-body { padding: 12px; }
+    .panel-action-btn { font-size: .75rem; font-weight: 600; background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px 6px; border-radius: 4px; transition: all var(--transition); }
+    .panel-action-btn:hover { color: var(--accent); background: rgba(232,67,147,.06); }
+
+    .history-list { display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto; }
+    .history-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background var(--transition); font-size: .85rem; }
+    .history-item:hover { background: var(--surface2); }
+    .history-item .h-icon { font-size: .9rem; flex-shrink: 0; }
+    .history-item .h-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .history-item .h-del { opacity: 0; background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: .8rem; padding: 2px 4px; border-radius: 4px; transition: all var(--transition); }
+    .history-item:hover .h-del { opacity: 1; }
+    .history-item .h-del:hover { color: #e74c3c; background: #fdf0f0; }
+
+    .fav-list { display: flex; flex-direction: column; gap: 6px; max-height: 360px; overflow-y: auto; }
+    .fav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface2); }
+    .fav-item img { width: 32px; height: 32px; object-fit: contain; border-radius: 4px; background: #fff; border: 1px solid var(--border); padding: 2px; flex-shrink: 0; }
+    .fav-item-info { flex: 1; overflow: hidden; }
+    .fav-item-info .fi-name { font-size: .82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fav-item-info .fi-domain { font-size: .72rem; color: var(--text-muted); }
+    .fav-remove { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: .9rem; padding: 3px 5px; border-radius: 4px; flex-shrink: 0; transition: all var(--transition); }
+    .fav-remove:hover { color: #e74c3c; background: #fdf0f0; }
+    .export-btn { width: 100%; margin-top: 10px; padding: 9px; background: linear-gradient(135deg, var(--brand), var(--brand-light)); color: #fff; border: none; border-radius: var(--radius-sm); font-size: .82rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: opacity var(--transition); }
+    .export-btn:hover { opacity: .9; }
+
+    .empty-panel { text-align: center; padding: 24px 12px; color: var(--text-muted); font-size: .85rem; }
+    .empty-panel .ep-icon { font-size: 1.8rem; margin-bottom: 6px; }
+
+    /* ── Toast ── */
+    #toastContainer { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast { background: #1a2a3a; color: #fff; padding: 11px 18px; border-radius: 10px; font-size: .85rem; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.2); animation: slideIn .3s ease; display: flex; align-items: center; gap: 8px; }
+    .toast.success { background: #16a34a; }
+    .toast.error   { background: #e74c3c; }
+    .toast.info    { background: var(--brand-light); }
+    @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } }
+    @keyframes fadeOut { to { opacity: 0; transform: translateX(30px); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Footer ── */
+    footer { background: var(--brand); color: rgba(255,255,255,.65); text-align: center; padding: 14px; font-size: .78rem; }
+    footer strong { color: rgba(255,255,255,.9); }
+    footer a { color: rgba(255,255,255,.75); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    @media (max-width: 520px) {
+      .search-wrap { flex-direction: column; }
+      #searchBtn { width: 100%; justify-content: center; }
+      .cards-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 340px) { .cards-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo-brand" href="#">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="rgba(255,255,255,.15)"/>
+        <path d="M8 10h16M8 16h10M8 22h13" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="24" cy="22" r="4" fill="#e84393"/>
+        <path d="M22.5 22h3M24 20.5v3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>GEP Logo Finder</span>
+    </a>
+    <span class="header-badge">Solution Design Team</span>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Find Any Company Logo</h1>
+    <p>Search by company name or domain — get matching results with the highest quality logos.</p>
+
+    <div class="search-wrap" id="searchWrap">
+      <div class="search-input-wrap">
+        <svg class="s-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="e.g. apple, google.com, microsoft..." autocomplete="off" spellcheck="false" />
+        <!-- Autocomplete dropdown -->
+        <div id="autocomplete"></div>
+      </div>
+      <button id="searchBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </button>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div id="resultsArea">
+      <div class="state-box">
+        <div class="state-icon">🔍</div>
+        <h3>Search for a Logo</h3>
+        <p>Type a company name and see matching results. SVG format is fetched first for best quality.</p>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="panel">
+        <div class="panel-header">
+          <h3>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Recent Searches
+          </h3>
+          <button class="panel-action-btn" id="clearHistoryBtn">Clear all</button>
+        </div>
+        <div class="panel-body">
+          <div class="history-list" id="historyList">
+            <div class="empty-panel"><div class="ep-icon">🕐</div>No recent searches</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Favorites
+          </h3>
+          <button class="panel-action-btn" id="clearFavsBtn">Clear all</button>
+        </div>
+        <div class="panel-body">
+          <div class="fav-list" id="favList">
+            <div class="empty-panel"><div class="ep-icon">💛</div>No favorites saved yet</div>
+          </div>
+          <button class="export-btn" id="exportFavsBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Favorites as JSON
+          </button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  <strong>GEP Logo Finder</strong> &nbsp;·&nbsp; Maintained by <strong>GEP Solution Design (SD) Team</strong> &nbsp;·&nbsp; Not maintained by IT &nbsp;·&nbsp; Powered by <a href="https://logo.dev" target="_blank">Logo.dev</a>
+</footer>
+
+<div id="toastContainer"></div>
+
+<script>
+'use strict';
+
+/* ── CONFIG ── */
+const API_KEY      = 'pk_F3Kj1CmdQAy5nJ00eAPR7Q';
+const SECRET_KEY   = 'sk_Aj28JGhuQvmTifhPdkLMng';
+const CDN_BASE     = 'https://img.logo.dev/';
+const LS_HISTORY   = 'gepLogoHistory';
+const LS_FAVORITES = 'gepLogoFavorites';
+const MAX_HISTORY  = 20;
+
+/* ── DOM ── */
+const searchInput     = document.getElementById('searchInput');
+const searchBtn       = document.getElementById('searchBtn');
+const autocomplete    = document.getElementById('autocomplete');
+const resultsArea     = document.getElementById('resultsArea');
+const historyList     = document.getElementById('historyList');
+const favList         = document.getElementById('favList');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+const clearFavsBtn    = document.getElementById('clearFavsBtn');
+const exportFavsBtn   = document.getElementById('exportFavsBtn');
+const toastContainer  = document.getElementById('toastContainer');
+
+/* ── STATE ── */
+let acResults     = [];   // current autocomplete matches
+let acFocused     = -1;   // keyboard-navigated index
+let debounceTimer = null;
+let svgAvailCache = {};   // domain → true/false SVG availability
+
+/* ── LOCAL STORAGE ── */
+const readLS  = k => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } };
+const writeLS = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+
+function addToHistory(q) {
+  let h = readLS(LS_HISTORY).filter(x => x.toLowerCase() !== q.toLowerCase());
+  h.unshift(q);
+  writeLS(LS_HISTORY, h.slice(0, MAX_HISTORY));
+  renderHistory();
+}
+
+function toggleFavorite(entry) {
+  let favs = readLS(LS_FAVORITES);
+  const idx = favs.findIndex(f => f.domain === entry.domain);
+  if (idx > -1) { favs.splice(idx, 1); writeLS(LS_FAVORITES, favs); renderFavorites(); return false; }
+  favs.unshift(entry);
+  writeLS(LS_FAVORITES, favs);
+  renderFavorites();
+  return true;
+}
+const isFavorite = domain => readLS(LS_FAVORITES).some(f => f.domain === domain);
+
+/* ── URL BUILDERS ── */
+const pngUrl = domain => `${CDN_BASE}${domain}?token=${API_KEY}&size=200&format=png`;
+const svgUrl = domain => `${CDN_BASE}${domain}?token=${API_KEY}&format=svg`;
+
+/* ── SVG AVAILABILITY CHECK ──
+   Fetch SVG as text; if it contains actual path/shape data it's real.
+   Logo.dev returns a small fallback for unknown domains. */
+async function hasSvg(domain) {
+  if (domain in svgAvailCache) return svgAvailCache[domain];
+  try {
+    const r = await fetch(svgUrl(domain));
+    if (!r.ok) { svgAvailCache[domain] = false; return false; }
+    const text = await r.text();
+    // A meaningful SVG has <path or <circle etc., not just an empty stub
+    const meaningful = /<(path|circle|rect|polygon|polyline|ellipse|g)[^>]*d=/i.test(text) ||
+                       (text.includes('<path') && text.length > 300);
+    svgAvailCache[domain] = meaningful;
+    return meaningful;
+  } catch {
+    svgAvailCache[domain] = false;
+    return false;
+  }
+}
+
+/* ── SEARCH API ── */
+async function fetchSuggestions(q) {
+  if (q.length < 1) return [];
+  try {
+    const r = await fetch(
+      `https://api.logo.dev/search?q=${encodeURIComponent(q)}`,
+      { headers: { 'Authorization': `Bearer ${SECRET_KEY}` } }
+    );
+    if (!r.ok) return [];
+    // API returns [{name, domain, logo_url}, ...]
+    return await r.json();
+  } catch { return []; }
+}
+
+/* ── AUTOCOMPLETE ── */
+function showAutocomplete(items) {
+  acResults = items;
+  acFocused = -1;
+  if (!items.length) { hideAutocomplete(); return; }
+  autocomplete.innerHTML = items.map((it, i) => `
+    <div class="ac-item" data-idx="${i}" data-domain="${escHtml(it.domain)}">
+      <img src="${escHtml(pngUrl(it.domain))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
+      <div class="ac-item-text">
+        <div class="ac-item-name">${escHtml(it.name)}</div>
+        <div class="ac-item-domain">${escHtml(it.domain)}</div>
+      </div>
+    </div>`).join('<div class="ac-divider"></div>');
+  autocomplete.classList.add('open');
+
+  autocomplete.querySelectorAll('.ac-item').forEach(el => {
+    el.addEventListener('mousedown', e => {
+      e.preventDefault();
+      const idx = parseInt(el.dataset.idx);
+      selectAcItem(idx);
+    });
+  });
+}
+
+function hideAutocomplete() {
+  autocomplete.classList.remove('open');
+  autocomplete.innerHTML = '';
+  acResults = [];
+  acFocused = -1;
+}
+
+function selectAcItem(idx) {
+  const item = acResults[idx];
+  if (!item) return;
+  searchInput.value = item.name;
+  hideAutocomplete();
+  performSearch(item.name, [item]);   // search with known results
+}
+
+function highlightAcItem(idx) {
+  autocomplete.querySelectorAll('.ac-item').forEach((el, i) => {
+    el.classList.toggle('focused', i === idx);
+  });
+}
+
+/* ── MAIN SEARCH ── */
+async function performSearch(rawQuery, knownResults = null) {
+  const q = rawQuery.trim();
+  if (!q) { showToast('Please enter a company name or domain.', 'error'); return; }
+
+  hideAutocomplete();
+  setSearchLoading(true);
+  showSkeletons(6);
+  addToHistory(q);
+
+  let matches = knownResults;
+  if (!matches) {
+    matches = await fetchSuggestions(q);
+  }
+
+  // Fallback: if API returns nothing, treat the input as a domain directly
+  if (!matches || !matches.length) {
+    const domain = normaliseDomain(q);
+    const name   = displayName(domain);
+    matches = [{ name, domain }];
+  }
+
+  // Probe SVG availability for all matches in parallel (capped to keep it snappy)
+  const cap     = Math.min(matches.length, 12);
+  const sliced  = matches.slice(0, cap);
+  await Promise.all(sliced.map(m => hasSvg(m.domain)));
+
+  setSearchLoading(false);
+  renderResults(sliced, q);
+}
+
+function normaliseDomain(raw) {
+  raw = raw.trim().toLowerCase().replace(/^https?:\/\//i, '');
+  if (/\.[a-z]{2,}/.test(raw)) return raw.split('/')[0];
+  return raw.replace(/\s+/g, '') + '.com';
+}
+
+function displayName(domain) {
+  const stem = domain.split('.')[0];
+  return stem.charAt(0).toUpperCase() + stem.slice(1);
+}
+
+function setSearchLoading(on) {
+  searchBtn.disabled = on;
+  searchBtn.innerHTML = on
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Searching…`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Search`;
+}
+
+/* ── RENDER ── */
+function showSkeletons(n) {
+  const sk = Array(n).fill(`
+    <div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+      </div>
+    </div>`).join('');
+  resultsArea.innerHTML = `<div class="results-header"><h2>Searching…</h2></div><div class="cards-grid">${sk}</div>`;
+}
+
+function renderResults(results, query) {
+  if (!results.length) {
+    resultsArea.innerHTML = `
+      <div class="state-box error">
+        <div class="state-icon">😕</div>
+        <h3>No Results Found</h3>
+        <p>No companies matched "<strong>${escHtml(query)}</strong>". Try a different name or domain.</p>
+      </div>`;
+    return;
+  }
+
+  const header = `
+    <div class="results-header">
+      <h2>Results for "${escHtml(query)}"</h2>
+      <span class="results-count">${results.length} match${results.length !== 1 ? 'es' : ''}</span>
+    </div>`;
+
+  const cards = results.map(r => buildCard(r)).join('');
+  resultsArea.innerHTML = `${header}<div class="cards-grid">${cards}</div>`;
+
+  // Attach interactions
+  resultsArea.querySelectorAll('.logo-card').forEach(card => {
+    const domain  = card.dataset.domain;
+    const name    = card.dataset.name;
+    const hasSVG  = card.dataset.svg === '1';
+
+    card.querySelector('.fav-btn').addEventListener('click', () => {
+      const added = toggleFavorite({ domain, name, logoUrl: pngUrl(domain) });
+      card.querySelector('.fav-btn').classList.toggle('active', added);
+      showToast(added ? '💛 Added to favorites' : 'Removed from favorites', added ? 'success' : 'info');
+    });
+
+    card.querySelector('.btn-svg').addEventListener('click', () => {
+      if (hasSVG) downloadSvg(domain, name);
+      else downloadPng(pngUrl(domain), domain, name);
+    });
+
+    card.querySelector('.btn-png').addEventListener('click', () => downloadPng(pngUrl(domain), domain, name));
+    card.querySelector('.btn-copy-png').addEventListener('click', e => copyAsPng(pngUrl(domain), e.currentTarget));
+    card.querySelector('.btn-open').addEventListener('click', () => window.open(pngUrl(domain), '_blank'));
+  });
+}
+
+function buildCard(r) {
+  const svgAvail = svgAvailCache[r.domain] === true;
+  const fav      = isFavorite(r.domain);
+  const preview  = pngUrl(r.domain);
+
+  const badgeHtml = svgAvail
+    ? `<span class="svg-badge">SVG</span>`
+    : `<span class="png-badge">PNG</span>`;
+
+  const svgBtnLabel = svgAvail
+    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save as SVG`
+    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Save as PNG`;
+
+  return `
+    <div class="logo-card" data-domain="${escHtml(r.domain)}" data-name="${escHtml(r.name)}" data-svg="${svgAvail ? 1 : 0}">
+      <div class="card-img-wrap">
+        <img src="${escHtml(preview)}" alt="${escHtml(r.name)} logo" loading="lazy" onerror="this.closest('.logo-card').classList.add('img-err')" />
+        ${badgeHtml}
+        <button class="fav-btn ${fav ? 'active' : ''}" title="${fav ? 'Remove from favorites' : 'Add to favorites'}">${fav ? '💛' : '🤍'}</button>
+      </div>
+      <div class="card-body">
+        <div class="card-title">${escHtml(r.name)}</div>
+        <div class="card-domain">${escHtml(r.domain)}</div>
+      </div>
+      <div class="card-actions">
+        <button class="btn-svg" title="${svgAvail ? 'Download SVG (best quality, scalable)' : 'SVG not available — download PNG'}">${svgBtnLabel}</button>
+        <div class="card-actions-row">
+          <button class="card-btn btn-png" title="Save as PNG">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            PNG
+          </button>
+          <button class="card-btn btn-copy-png" title="Copy logo image to clipboard">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+          <button class="card-btn btn-open" title="Open image in new tab">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            Open
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── DOWNLOAD ACTIONS ── */
+async function downloadSvg(domain, name) {
+  try {
+    showToast('Downloading SVG…', 'info');
+    const r = await fetch(svgUrl(domain));
+    if (!r.ok) throw new Error();
+    const text = await r.text();
+    const blob = new Blob([text], { type: 'image/svg+xml' });
+    triggerDownload(blob, `${domain}_logo.svg`);
+    showToast('✅ SVG downloaded!', 'success');
+  } catch {
+    showToast('SVG download failed — trying PNG.', 'error');
+    downloadPng(pngUrl(domain), domain, name);
+  }
+}
+
+async function downloadPng(url, domain) {
+  try {
+    showToast('Downloading PNG…', 'info');
+    const r = await fetch(url);
+    if (!r.ok) throw new Error();
+    const blob = await r.blob();
+    triggerDownload(blob, `${domain}_logo.png`);
+    showToast('✅ PNG downloaded!', 'success');
+  } catch {
+    window.open(url, '_blank');
+    showToast('Direct download unavailable — opened in new tab.', 'error');
+  }
+}
+
+function triggerDownload(blob, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ── COPY LOGO AS PNG ──
+   Draws the image onto a canvas, reads back as PNG blob, writes to clipboard. */
+async function copyAsPng(url, btn) {
+  try {
+    // Load image — needs crossOrigin for canvas taint
+    const img = await loadImage(url);
+    const canvas = document.createElement('canvas');
+    canvas.width  = img.naturalWidth  || 200;
+    canvas.height = img.naturalHeight || 200;
+    canvas.getContext('2d').drawImage(img, 0, 0);
+
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    if (!blob) throw new Error('Canvas toBlob failed');
+
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+
+    btn.classList.add('copied');
+    const orig = btn.innerHTML;
+    btn.textContent = '✓ Copied!';
+    showToast('PNG copied to clipboard!', 'success');
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = orig; }, 2000);
+  } catch (err) {
+    // Fallback: copy URL as text
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('Image clipboard not supported — URL copied instead.', 'info');
+    } catch {
+      showToast('Clipboard access denied.', 'error');
+    }
+  }
+}
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload  = () => resolve(img);
+    img.onerror = reject;
+    img.src     = src;
+  });
+}
+
+/* ── HISTORY RENDER ── */
+function renderHistory() {
+  const h = readLS(LS_HISTORY);
+  if (!h.length) { historyList.innerHTML = '<div class="empty-panel"><div class="ep-icon">🕐</div>No recent searches</div>'; return; }
+  historyList.innerHTML = h.map(q => `
+    <div class="history-item" data-query="${escHtml(q)}">
+      <span class="h-icon">🔍</span>
+      <span class="h-text">${escHtml(q)}</span>
+      <button class="h-del" title="Remove">✕</button>
+    </div>`).join('');
+  historyList.querySelectorAll('.history-item').forEach(item => {
+    item.addEventListener('click', e => {
+      if (e.target.classList.contains('h-del')) {
+        e.stopPropagation();
+        const h2 = readLS(LS_HISTORY).filter(q => q !== item.dataset.query);
+        writeLS(LS_HISTORY, h2);
+        renderHistory();
+        return;
+      }
+      searchInput.value = item.dataset.query;
+      performSearch(item.dataset.query);
+    });
+  });
+}
+
+/* ── FAVORITES RENDER ── */
+function renderFavorites() {
+  const favs = readLS(LS_FAVORITES);
+  if (!favs.length) { favList.innerHTML = '<div class="empty-panel"><div class="ep-icon">💛</div>No favorites saved yet</div>'; return; }
+  favList.innerHTML = favs.map(f => `
+    <div class="fav-item" data-domain="${escHtml(f.domain)}">
+      <img src="${escHtml(f.logoUrl)}" alt="${escHtml(f.name)}" loading="lazy" />
+      <div class="fav-item-info">
+        <div class="fi-name">${escHtml(f.name)}</div>
+        <div class="fi-domain">${escHtml(f.domain)}</div>
+      </div>
+      <button class="fav-remove" title="Remove">✕</button>
+    </div>`).join('');
+  favList.querySelectorAll('.fav-item').forEach(item => {
+    item.querySelector('.fav-remove').addEventListener('click', () => {
+      const domain = item.dataset.domain;
+      writeLS(LS_FAVORITES, readLS(LS_FAVORITES).filter(f => f.domain !== domain));
+      renderFavorites();
+      const card = resultsArea.querySelector(`.logo-card[data-domain="${domain}"] .fav-btn`);
+      if (card) { card.classList.remove('active'); card.innerHTML = '🤍'; }
+      showToast('Removed from favorites', 'info');
+    });
+  });
+}
+
+function exportFavorites() {
+  const favs = readLS(LS_FAVORITES);
+  if (!favs.length) { showToast('No favorites to export.', 'error'); return; }
+  triggerDownload(new Blob([JSON.stringify(favs, null, 2)], { type: 'application/json' }), 'gep_logo_favorites.json');
+  showToast('✅ Favorites exported!', 'success');
+}
+
+/* ── TOAST ── */
+function showToast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  toastContainer.appendChild(el);
+  setTimeout(() => {
+    el.style.animation = 'fadeOut .3s ease forwards';
+    el.addEventListener('animationend', () => el.remove());
+  }, 2800);
+}
+
+/* ── UTILS ── */
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ── EVENT LISTENERS ── */
+searchBtn.addEventListener('click', () => performSearch(searchInput.value));
+
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (acFocused >= 0 && acResults[acFocused]) { selectAcItem(acFocused); return; }
+    performSearch(searchInput.value);
+    return;
+  }
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    acFocused = Math.min(acFocused + 1, acResults.length - 1);
+    highlightAcItem(acFocused);
+  }
+  if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    acFocused = Math.max(acFocused - 1, 0);
+    highlightAcItem(acFocused);
+  }
+  if (e.key === 'Escape') hideAutocomplete();
+});
+
+searchInput.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  const q = searchInput.value.trim();
+  if (!q) { hideAutocomplete(); return; }
+  debounceTimer = setTimeout(async () => {
+    const items = await fetchSuggestions(q);
+    if (searchInput.value.trim() === q) showAutocomplete(items);
+  }, 280);
+});
+
+// Close autocomplete when clicking outside
+document.addEventListener('mousedown', e => {
+  if (!document.getElementById('searchWrap').contains(e.target)) hideAutocomplete();
+});
+
+clearHistoryBtn.addEventListener('click', () => { writeLS(LS_HISTORY, []); renderHistory(); showToast('History cleared.', 'info'); });
+clearFavsBtn.addEventListener('click', () => {
+  writeLS(LS_FAVORITES, []);
+  renderFavorites();
+  resultsArea.querySelectorAll('.fav-btn.active').forEach(b => { b.classList.remove('active'); b.innerHTML = '🤍'; });
+  showToast('Favorites cleared.', 'info');
+});
+exportFavsBtn.addEventListener('click', exportFavorites);
+
+/* ── INIT ── */
+renderHistory();
+renderFavorites();
+</script>
+</body>
+</html>
