@@ -32,8 +32,11 @@
 
     /* Hero */
     .hero{text-align:center;margin-bottom:36px}
-    .hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:var(--brand);margin-bottom:8px;letter-spacing:-.5px}
-    .hero p{color:var(--muted);font-size:1rem;margin-bottom:28px}
+    .hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:var(--brand);margin-bottom:16px;letter-spacing:-.5px}
+    .how-to{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 4px;margin-bottom:28px;font-size:.875rem;color:var(--muted)}
+    .how-to span{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 13px;line-height:1.3}
+    .how-to span strong{color:var(--brand)}
+    .ht-sep{background:none!important;border:none!important;padding:0 2px!important;font-size:1rem;color:var(--border)}
 
 
     /* Search */
@@ -66,8 +69,8 @@
     /* Logo Card */
     .logo-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;transition:transform var(--t),box-shadow var(--t);overflow:hidden}
     .logo-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
-    .card-img-wrap{background:var(--surface2);display:flex;align-items:center;justify-content:center;height:150px;padding:24px;position:relative;overflow:hidden}
-    .card-img-wrap img{max-width:100%;max-height:110px;object-fit:contain;transition:transform var(--t)}
+    .card-img-wrap{background:#ffffff;display:flex;align-items:center;justify-content:center;height:150px;padding:24px;position:relative;overflow:hidden}
+    .card-img-wrap img{max-width:100%;max-height:110px;object-fit:contain;transition:transform var(--t);mix-blend-mode:multiply}
     .logo-card:hover .card-img-wrap img{transform:scale(1.06)}
 
     /* Source badge */
@@ -101,8 +104,8 @@
     .card-btn{flex:1;padding:7px 5px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);font-size:.7rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;transition:all var(--t);color:var(--text)}
     .card-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
     .card-btn.copied{background:var(--green);color:#fff;border-color:var(--green)}
-    .btn-convert{width:100%;padding:7px 10px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:var(--rs);font-size:.73rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:opacity var(--t),transform var(--t)}
-    .btn-convert:hover{opacity:.9;transform:translateY(-1px)}
+    .btn-convert{width:100%;padding:7px 10px;background:#6b7280;color:#fff;border:none;border-radius:var(--rs);font-size:.73rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:opacity var(--t),transform var(--t)}
+    .btn-convert:hover{opacity:.85;transform:translateY(-1px)}
     .btn-convert:disabled{opacity:.45;cursor:default;transform:none}
 
     /* Skeleton */
@@ -217,12 +220,7 @@
 <header>
   <div class="hinner">
     <a class="brand" href="#">
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="rgba(255,255,255,.15)"/>
-        <path d="M8 10h16M8 16h10M8 22h13" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="24" cy="22" r="4" fill="#e84393"/>
-        <path d="M22.5 22h3M24 20.5v3" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
+      <svg width="42" height="42" viewBox="0 0 567 571" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" overflow="hidden"><g transform="translate(-1166 -584)"><g><g><path d="M29.1065 264.105C67.8167 355.191 173.037 397.65 264.123 358.94 355.209 320.229 397.668 215.009 358.957 123.923 320.247 32.8375 215.027-9.62119 123.94 29.089 32.8551 67.7992-9.60373 173.019 29.1065 264.105Z" stroke="rgba(255,255,255,.8)" stroke-width="30.4167" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1 0 0 1 1240.23 662.226)"/><path d="M320.736 320.715 459.718 459.718" stroke="rgba(255,255,255,.8)" stroke-width="30.4167" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="matrix(1 0 0 1 1240.23 662.226)"/></g></g><path d="M1333.15 755C1333.15 755 1318.38 765.666 1302.25 800.073 1302.25 800.073 1287.14 834.824 1291.94 864.758 1291.94 864.758 1300.87 931.163 1367.83 945.27 1367.83 945.27 1420.02 957.312 1454.35 930.819 1476.33 915.336 1491.78 891.939 1497.27 865.446 1497.27 865.446 1504.83 835.168 1488.35 807.986 1482.51 798.009 1473.58 790.095 1462.94 785.278 1452.29 780.461 1438.56 779.429 1429.97 788.719 1424.48 794.568 1423.79 806.954 1431.35 811.427 1432.38 812.115 1433.06 812.459 1434.09 812.803 1434.09 812.803 1422.76 802.826 1433.75 792.503 1437.18 790.095 1441.31 788.719 1445.08 789.063 1455.38 789.751 1464.65 796.632 1468.43 806.266 1474.27 821.749 1474.95 839.297 1467.4 854.091 1461.22 865.446 1451.26 874.392 1439.24 879.552 1439.24 879.552 1404.91 900.197 1360.62 875.768 1360.62 875.768 1327.65 860.629 1319.41 815.212 1317.35 794.568 1322.16 773.236 1333.15 755" fill="#ffffff" fill-rule="evenodd"/><path d="M1434.48 803.187C1436.88 800.769 1439.97 799.733 1443.06 800.079 1447.18 800.769 1450.95 803.532 1452.32 807.677 1452.67 809.404 1452.67 811.476 1452.32 813.203 1449.92 827.018 1437.22 835.998 1423.5 833.581 1423.15 833.581 1423.15 833.581 1422.81 833.581 1420.06 832.89 1417.66 832.199 1415.26 831.163 1384.71 818.038 1391.58 774.866 1407.02 752.761 1412.51 745.508 1419.38 739.982 1427.27 735.838 1427.27 735.838 1450.61 722.022 1499 732.039 1495.91 730.657 1493.17 729.275 1490.42 727.203 1482.18 723.404 1473.6 720.295 1464.68 718.223 1437.57 711.661 1409.42 712.697 1383.34 721.677 1375.1 724.44 1367.55 728.585 1360.69 733.765 1348.33 742.745 1338.72 762.432 1338.04 777.283L1338.04 777.283C1324.65 869.501 1444.77 889.533 1461.93 830.818 1470.86 800.424 1437.91 785.573 1432.76 804.914Z" fill="#ffffff" fill-rule="evenodd"/><path d="M1330 952.681C1363.7 970.557 1403.24 975.026 1440.04 965.401 1463.76 958.869 1484.74 944.774 1499.18 924.836 1516.38 901.803 1524.28 873.27 1521.88 844.737 1521.88 844.737 1519.13 801.421 1486.46 780.795 1469.95 771.169 1449.32 769.794 1431.78 777.701 1431.78 777.701 1411.15 788.014 1423.19 809.328 1423.19 809.328 1428 817.579 1434.88 817.922 1434.88 817.922 1421.12 820.673 1413.9 802.453 1409.09 787.327 1412.87 770.826 1423.53 759.481 1423.53 759.481 1446.91 730.604 1497.12 745.043 1541.82 758.106 1569.67 802.453 1569.67 848.174 1569.67 848.174 1573.46 879.458 1555.23 916.585 1546.29 934.461 1533.57 950.618 1517.75 963.338 1517.75 963.338 1496.09 983.277 1457.23 991.871 1457.23 991.871 1423.53 1002.87 1374.7 983.62 1375.39 983.277 1345.82 971.589 1330 952.681" fill="#ffffff" fill-rule="evenodd"/></g></svg>
       <span>GEP Logo Finder</span>
     </a>
     <div class="hright">
@@ -230,7 +228,7 @@
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span>Bulk Download</span>
       </button>
-      <span class="badge">Solution Design Team</span>
+      <span class="badge">Developed by Solution Design Team</span>
     </div>
   </div>
 </header>
@@ -307,7 +305,13 @@
 <main>
   <div class="hero">
     <h1>Find Any Company Logo</h1>
-    <p>Search by company name or domain — SVG always first, PNG as fallback.</p>
+    <div class="how-to">
+      <span><strong>1.</strong> Type a company name or domain</span>
+      <span class="ht-sep">→</span>
+      <span><strong>2.</strong> Pick from matching results</span>
+      <span class="ht-sep">→</span>
+      <span><strong>3.</strong> Download SVG or PNG — or bulk-download a list</span>
+    </div>
     <div class="search-wrap" id="searchWrap">
       <div class="sinput-wrap">
         <svg class="sico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -361,7 +365,7 @@
 </main>
 
 <footer>
-  <strong>GEP Logo Finder</strong> &nbsp;·&nbsp; Maintained by <strong>GEP Solution Design (SD) Team</strong> &nbsp;·&nbsp; Not maintained by IT
+  <strong>GEP Logo Finder</strong> &nbsp;·&nbsp; Developed by <strong>GEP Solution Design (SD) Team</strong> &nbsp;·&nbsp; Not maintained by IT
 </footer>
 <div id="toastWrap"></div>
 
