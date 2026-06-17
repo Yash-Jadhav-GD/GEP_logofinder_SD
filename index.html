@@ -108,6 +108,45 @@
     .btn-convert:hover{opacity:.85;transform:translateY(-1px)}
     .btn-convert:disabled{opacity:.45;cursor:default;transform:none}
 
+    /* Card multi-select */
+    .card-cb-wrap{position:absolute;top:8px;left:8px;z-index:12;opacity:0;transition:opacity .15s}
+    .card-cb-wrap input[type=checkbox]{width:18px;height:18px;accent-color:var(--brand-l);cursor:pointer;border-radius:3px}
+    .logo-card:hover .card-cb-wrap,.logo-card.selected .card-cb-wrap{opacity:1}
+    .logo-card:hover .src-badge,.logo-card.selected .src-badge{opacity:0;transition:opacity .15s}
+    .logo-card.selected{border-color:var(--brand-l);box-shadow:0 0 0 2px rgba(26,107,165,.25),var(--shadow-sm)}
+
+    /* Selection bar */
+    .sel-bar{position:fixed;bottom:0;left:0;right:0;background:var(--brand);color:#fff;padding:12px 24px;display:flex;align-items:center;gap:14px;z-index:400;box-shadow:0 -4px 20px rgba(10,61,98,.25);transform:translateY(100%);transition:transform .25s ease}
+    .sel-bar.visible{transform:translateY(0)}
+    .sel-bar-info{flex:1;font-size:.92rem;font-weight:700}
+    .sel-bar-info span{opacity:.7;font-weight:400;font-size:.8rem;margin-left:8px}
+    .sel-btn{padding:9px 18px;border:none;border-radius:var(--rs);font-size:.82rem;font-weight:700;cursor:pointer;transition:all var(--t);display:flex;align-items:center;gap:6px;white-space:nowrap}
+    .sel-btn.dl{background:#fff;color:var(--brand)}.sel-btn.dl:hover{background:#daeaf8}
+    .sel-btn.cl{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.35)}.sel-btn.cl:hover{background:rgba(255,255,255,.25)}
+
+    /* Bulk button in search row */
+    .bulk-search-btn{padding:13px 18px;background:var(--surface);border:2px solid var(--border);border-radius:var(--r);font-size:.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;color:var(--text);white-space:nowrap;flex-shrink:0;transition:all var(--t)}
+    .bulk-search-btn:hover{border-color:var(--brand-l);color:var(--brand-l)}
+
+    /* Bulk preview grid */
+    .bulk-preview{display:none;margin-top:4px}
+    .bulk-preview.visible{display:block}
+    .bulk-prev-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:.85rem;padding:0 2px}
+    .bulk-prev-hdr strong{color:var(--brand)}
+    .bulk-prev-actions{display:flex;gap:6px}
+    .bulk-prev-toggle{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:.75rem;font-weight:600;cursor:pointer;color:var(--muted);transition:all var(--t)}
+    .bulk-prev-toggle:hover{background:var(--surface2);color:var(--text)}
+    .bulk-prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;max-height:250px;overflow-y:auto;padding:2px}
+    .bulk-prev-item{background:var(--surface2);border:2px solid var(--border);border-radius:var(--rs);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;transition:all var(--t);position:relative;text-align:center}
+    .bulk-prev-item:hover{border-color:var(--brand-l)}
+    .bulk-prev-item.checked{border-color:var(--brand-l);background:rgba(26,107,165,.07)}
+    .bulk-prev-item.unchecked{opacity:.4;filter:grayscale(.6)}
+    .bulk-prev-item img{width:44px;height:44px;object-fit:contain;mix-blend-mode:multiply;background:#fff;border-radius:4px;padding:3px;border:1px solid var(--border)}
+    .bulk-prev-item .bpn{font-size:.68rem;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text)}
+    .bulk-prev-item .bpd{font-size:.6rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+    .bulk-prev-ck{position:absolute;top:4px;right:4px;width:14px;height:14px;accent-color:var(--brand-l);cursor:pointer}
+    .bulk-prev-empty{text-align:center;padding:20px;color:var(--muted);font-size:.85rem}
+
     /* Skeleton */
     .skel{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
     .skel-img{height:150px;background:linear-gradient(90deg,#e8ecf0 25%,#f5f7fa 50%,#e8ecf0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
@@ -224,10 +263,6 @@
       <span>GEP Logo Finder</span>
     </a>
     <div class="hright">
-      <button class="bulk-hbtn" id="openBulkBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span>Bulk Download</span>
-      </button>
       <span class="badge">Developed by Solution Design Team</span>
     </div>
   </div>
@@ -280,6 +315,18 @@
         </div>
       </div>
 
+      <!-- Logo preview before download -->
+      <div class="bulk-preview" id="bulkPreview">
+        <div class="bulk-prev-hdr">
+          <strong id="bulkPrevCount">0 companies</strong>
+          <div class="bulk-prev-actions">
+            <button class="bulk-prev-toggle" id="bulkPrevSelectAll">Select All</button>
+            <button class="bulk-prev-toggle" id="bulkPrevDeselectAll">Deselect All</button>
+          </div>
+        </div>
+        <div class="bulk-prev-grid" id="bulkPrevGrid"></div>
+      </div>
+
       <div class="bulk-opts">
         <strong style="color:var(--brand);font-size:.85rem">Options:</strong>
         <label><input type="checkbox" id="optConvertSvg"/> Convert PNG→SVG if no SVG found (experimental)</label>
@@ -322,6 +369,10 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         Search
       </button>
+      <button id="openBulkBtn" class="bulk-search-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Bulk Download
+      </button>
     </div>
   </div>
 
@@ -363,6 +414,16 @@
     </aside>
   </div>
 </main>
+
+<!-- Selection bar -->
+<div id="selBar" class="sel-bar">
+  <div class="sel-bar-info" id="selBarInfo">0 selected</div>
+  <button class="sel-btn dl" id="selDownloadBtn">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download ZIP
+  </button>
+  <button class="sel-btn cl" id="selClearBtn">✕ Clear selection</button>
+</div>
 
 <footer>
   <strong>GEP Logo Finder</strong> &nbsp;·&nbsp; Developed by <strong>GEP Solution Design (SD) Team</strong> &nbsp;·&nbsp; Not maintained by IT
@@ -417,6 +478,8 @@ let acItems    = [], acIdx = -1, debTimer = null;
 let curResults = [];      // last search result objects
 let bulkParsed = [];      // domains from file upload
 let bulkRunning= false;
+const selectedDomains = new Set();   // cards selected in results
+const bulkChecked     = new Set();   // items checked in bulk preview
 // logoCache[domain] = { sources: { iconify, wikimedia, logodev, png }, active }
 const logoCache = {};
 
@@ -609,6 +672,8 @@ async function doSearch(raw, known=null) {
   curResults = capped;
 
   setBusy(false);
+  // Clear previous card selections
+  selectedDomains.clear(); updateSelBar();
   // Render cards immediately with "resolving" state
   renderCards(capped, q);
   // Then resolve sources asynchronously per card
@@ -656,6 +721,9 @@ function buildCardInitial(r) {
       <div class="card-img-wrap">
         <img id="cimg-${esc(r.domain.replace(/\./g,'_'))}" src="${esc(logoPng(r.domain))}" alt="${esc(r.name)}" loading="lazy" onerror="this.style.opacity='.15'"/>
         <span class="src-badge resolving" id="badge-${esc(r.domain.replace(/\./g,'_'))}">⏳ checking…</span>
+        <label class="card-cb-wrap" title="Select for bulk download" onclick="event.stopPropagation()">
+          <input type="checkbox" class="card-cb" id="cb-${esc(r.domain.replace(/\./g,'_'))}" data-domain="${esc(r.domain)}"/>
+        </label>
         <button class="fav-btn ${isFav(r.domain)?'active':''}" id="fav-${esc(r.domain.replace(/\./g,'_'))}" title="${isFav(r.domain)?'Remove favorite':'Add to favorites'}">${isFav(r.domain)?'💛':'🤍'}</button>
       </div>
       <div class="card-sources" id="csrc-${esc(r.domain.replace(/\./g,'_'))}">
@@ -693,6 +761,13 @@ function wireCardStatic(domain, name) {
   card.querySelector('.btn-copy').addEventListener('click', e  => copyPng(logoPng(domain), e.currentTarget));
   card.querySelector('.btn-open').addEventListener('click', () => window.open(logoPng(domain),'_blank'));
   card.querySelector('.btn-convert').addEventListener('click', e => convertToSvg(logoPng(domain), domain, name, e.currentTarget));
+
+  const cb = document.getElementById('cb-' + key);
+  if (cb) cb.addEventListener('change', () => {
+    if (cb.checked) selectedDomains.add(domain); else selectedDomains.delete(domain);
+    card.classList.toggle('selected', cb.checked);
+    updateSelBar();
+  });
 
   document.getElementById('fav-' + key).addEventListener('click', () => {
     const added = toggleFav({ domain, name, logoUrl: logoPng(domain) });
@@ -906,10 +981,15 @@ async function readFile(file) {
 
 async function getBulkDomains() {
   const tab = document.querySelector('.btab.active').dataset.tab;
-  if (tab==='text')    return parseText($('bulkTextarea').value);
-  if (tab==='file')    { if (!bulkParsed.length) throw new Error('No file loaded.'); return bulkParsed; }
-  if (tab==='browser') { if (!curResults.length) throw new Error('Run a search first.'); return curResults.map(r=>r.domain); }
-  return [];
+  let allDomains = [];
+  if (tab==='text')    allDomains = parseText($('bulkTextarea').value);
+  else if (tab==='file')    { if (!bulkParsed.length) throw new Error('No file loaded.'); allDomains = bulkParsed; }
+  else if (tab==='browser') { if (!curResults.length) throw new Error('Run a search first.'); allDomains = curResults.map(r=>r.domain); }
+  // If preview is visible and has selections, use only checked items
+  if ($('bulkPreview').classList.contains('visible') && bulkChecked.size > 0) {
+    return allDomains.filter(d => bulkChecked.has(d));
+  }
+  return allDomains;
 }
 
 function updateBrowserTab() {
@@ -925,18 +1005,91 @@ function updateBrowserTab() {
   </div>`;
 }
 
+/* ══════════════════════════════════════════════════════
+   SELECTION BAR
+══════════════════════════════════════════════════════ */
+function updateSelBar() {
+  const bar = $('selBar');
+  const n   = selectedDomains.size;
+  $('selBarInfo').innerHTML = `<b>${n}</b> card${n!==1?'s':''} selected <span>— click Download ZIP to save as archive</span>`;
+  bar.classList.toggle('visible', n > 0);
+}
+
+/* ══════════════════════════════════════════════════════
+   BULK PREVIEW
+══════════════════════════════════════════════════════ */
+function showBulkPreview(domains) {
+  const wrap = $('bulkPreview');
+  const grid = $('bulkPrevGrid');
+  const cnt  = $('bulkPrevCount');
+
+  if (!domains.length) { wrap.classList.remove('visible'); return; }
+
+  // Sync bulkChecked with new list (keep existing selections if domain matches)
+  const prev = new Set(bulkChecked);
+  bulkChecked.clear();
+  domains.forEach(d => { if (prev.has(d) || !prev.size) bulkChecked.add(d); });
+  // Default: all checked
+  if (!bulkChecked.size) domains.forEach(d => bulkChecked.add(d));
+
+  cnt.textContent = `${domains.length} compan${domains.length!==1?'ies':'y'} — ${bulkChecked.size} selected`;
+  grid.innerHTML  = domains.map(d => {
+    const name   = dispName(d);
+    const checked = bulkChecked.has(d);
+    return `<div class="bulk-prev-item ${checked?'checked':'unchecked'}" data-domain="${esc(d)}" title="${esc(d)}">
+      <input type="checkbox" class="bulk-prev-ck" ${checked?'checked':''} onclick="event.stopPropagation()"/>
+      <img src="${esc(logoPng(d))}" alt="${esc(name)}" loading="lazy" onerror="this.style.opacity='.2'"/>
+      <div class="bpn">${esc(name)}</div>
+      <div class="bpd">${esc(d)}</div>
+    </div>`;
+  }).join('');
+
+  // Wire clicks
+  grid.querySelectorAll('.bulk-prev-item').forEach(el => {
+    const cb = el.querySelector('.bulk-prev-ck');
+    const toggle = () => {
+      cb.checked = !cb.checked;
+      if (cb.checked) bulkChecked.add(el.dataset.domain); else bulkChecked.delete(el.dataset.domain);
+      el.className = `bulk-prev-item ${cb.checked?'checked':'unchecked'}`;
+      cnt.textContent = `${domains.length} compan${domains.length!==1?'ies':'y'} — ${bulkChecked.size} selected`;
+    };
+    el.addEventListener('click', toggle);
+    cb.addEventListener('change', e => {
+      e.stopPropagation();
+      if (cb.checked) bulkChecked.add(el.dataset.domain); else bulkChecked.delete(el.dataset.domain);
+      el.className = `bulk-prev-item ${cb.checked?'checked':'unchecked'}`;
+      cnt.textContent = `${domains.length} compan${domains.length!==1?'ies':'y'} — ${bulkChecked.size} selected`;
+    });
+  });
+
+  wrap.classList.add('visible');
+}
+
 async function runBulk() {
   if (bulkRunning) return;
   let domains;
   try { domains = await getBulkDomains(); } catch(e) { toast(e.message,'er'); return; }
   if (!domains.length) { toast('No valid companies found in input.','er'); return; }
+  await runBulkFromDomains(domains);
+}
+
+async function runBulkFromDomains(domains) {
+  if (bulkRunning) return;
+  if (!domains.length) { toast('No logos selected.','er'); return; }
 
   bulkRunning = true;
-  const sBtn = $('startBulkBtn');
-  sBtn.disabled = true;
-  sBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Processing…`;
+  const sBtn = $('startBulkBtn') || { disabled:false, innerHTML:'' };
+  if ($('startBulkBtn')) {
+    sBtn.disabled = true;
+    sBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Processing…`;
+  }
 
-  try { await loadJSZip(); } catch { toast('JSZip unavailable (network?).','er'); bulkRunning=false; sBtn.disabled=false; sBtn.innerHTML='Download ZIP'; return; }
+  try { await loadJSZip(); } catch {
+    toast('JSZip unavailable (network?).','er');
+    bulkRunning=false;
+    if ($('startBulkBtn')) { $('startBulkBtn').disabled=false; $('startBulkBtn').innerHTML='Download ZIP'; }
+    return;
+  }
 
   const prog = $('bulkProg'); prog.classList.add('on');
   const fill = $('progFill'), ptxt = $('progText'), pcnt = $('progCount'), plog = $('progLog');
@@ -954,7 +1107,7 @@ async function runBulk() {
     ptxt.textContent = 'Resolving: ' + domain; setProgress();
     const name = dispName(domain);
     try {
-      const { sources, active } = await resolveLogoSources(domain, name);
+      const { sources } = await resolveLogoSources(domain, name);
       const bestSvgKey = ['iconify','wikimedia','logodev'].find(k => sources[k]);
 
       if (bestSvgKey) {
@@ -996,8 +1149,11 @@ async function runBulk() {
     logLine(`─── Complete: ${done} logos ───`, 'lok');
   } catch(e) { toast('ZIP generation failed: '+e.message,'er'); }
 
-  bulkRunning=false; sBtn.disabled=false;
-  sBtn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download ZIP`;
+  bulkRunning=false;
+  if ($('startBulkBtn')) {
+    $('startBulkBtn').disabled=false;
+    $('startBulkBtn').innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download ZIP`;
+  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1118,10 +1274,66 @@ async function handleFile(file) {
     $('fileChipName').textContent = `${file.name} — ${bulkParsed.length} companies found`;
     $('fileChip').style.display='inline-flex';
     toast(`✅ ${bulkParsed.length} companies parsed from ${file.name}`,'ok');
+    showBulkPreview(bulkParsed);
   } catch(e) { toast('Could not read file: '+e.message,'er'); }
 }
 
 $('startBulkBtn').addEventListener('click', runBulk);
+
+// Textarea: auto-preview on input (debounced)
+let previewTimer = null;
+$('bulkTextarea').addEventListener('input', () => {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(() => {
+    const domains = parseText($('bulkTextarea').value);
+    showBulkPreview(domains);
+  }, 400);
+});
+
+// Bulk preview toggle buttons
+$('bulkPrevSelectAll').addEventListener('click', () => {
+  $('bulkPrevGrid').querySelectorAll('.bulk-prev-item').forEach(el => {
+    el.classList.replace('unchecked','checked') || el.classList.add('checked');
+    el.classList.remove('unchecked');
+    el.querySelector('.bulk-prev-ck').checked = true;
+    bulkChecked.add(el.dataset.domain);
+  });
+  const total = $('bulkPrevGrid').querySelectorAll('.bulk-prev-item').length;
+  $('bulkPrevCount').textContent = `${total} compan${total!==1?'ies':'y'} — ${bulkChecked.size} selected`;
+});
+$('bulkPrevDeselectAll').addEventListener('click', () => {
+  $('bulkPrevGrid').querySelectorAll('.bulk-prev-item').forEach(el => {
+    el.classList.replace('checked','unchecked') || el.classList.add('unchecked');
+    el.classList.remove('checked');
+    el.querySelector('.bulk-prev-ck').checked = false;
+    bulkChecked.delete(el.dataset.domain);
+  });
+  const total = $('bulkPrevGrid').querySelectorAll('.bulk-prev-item').length;
+  $('bulkPrevCount').textContent = `${total} compan${total!==1?'ies':'y'} — 0 selected`;
+});
+
+// Selection bar buttons
+$('selDownloadBtn').addEventListener('click', () => {
+  if (!selectedDomains.size) return;
+  // Open bulk modal, pre-populate with selected domains, show preview
+  bulkChecked.clear();
+  selectedDomains.forEach(d => bulkChecked.add(d));
+  $('bulkModal').classList.remove('hidden');
+  // Activate paste tab and populate textarea for visibility
+  document.querySelectorAll('.btab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.btab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.btab[data-tab="text"]').classList.add('active');
+  $('tab-text').classList.add('active');
+  const domains = [...selectedDomains];
+  $('bulkTextarea').value = domains.join('\n');
+  showBulkPreview(domains);
+});
+$('selClearBtn').addEventListener('click', () => {
+  selectedDomains.clear();
+  resultsArea.querySelectorAll('.card-cb').forEach(cb => { cb.checked=false; });
+  resultsArea.querySelectorAll('.logo-card.selected').forEach(c => c.classList.remove('selected'));
+  updateSelBar();
+});
 
 /* ══════════════════════════════════════════════════════
    INIT
